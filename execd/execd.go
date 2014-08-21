@@ -86,6 +86,7 @@ func attachCmd(cmd *exec.Cmd, stdout, stderr io.Writer, stdin io.Reader) (*sync.
 
 func addKey(conf *ssh.ServerConfig, block *pem.Block) (err error) {
 	var key interface{}
+
 	switch block.Type {
 	case "RSA PRIVATE KEY":
 		key, err = x509.ParsePKCS1PrivateKey(block.Bytes)
@@ -99,11 +100,14 @@ func addKey(conf *ssh.ServerConfig, block *pem.Block) (err error) {
 	if err != nil {
 		return err
 	}
+
 	signer, err := ssh.NewSignerFromKey(key)
 	if err != nil {
 		return err
 	}
+
 	conf.AddHostKey(signer)
+
 	return nil
 }
 
@@ -112,15 +116,18 @@ func parseKeys(conf *ssh.ServerConfig, pemData []byte) error {
 	for {
 		var block *pem.Block
 		block, pemData = pem.Decode(pemData)
+
 		if block == nil {
 			if !found {
 				return errors.New("no private keys found")
 			}
 			return nil
 		}
+
 		if err := addKey(conf, block); err != nil {
 			return err
 		}
+
 		found = true
 	}
 }
@@ -129,16 +136,22 @@ func handleAuth(handler []string, conn ssh.ConnMetadata, key ssh.PublicKey) (*ss
 	keydata := string(bytes.TrimSpace(ssh.MarshalAuthorizedKey(key)))
 	cmd := exec.Command(handler[0], append(handler[1:], conn.User(), keydata)...)
 	var output bytes.Buffer
+
+	log.Printf("Connection from: %s with key %s", conn.RemoteAddr().String(), ssh.MarshalAuthorizedKey(key))
+
 	done, err := attachCmd(cmd, &output, &output, nil)
 	if err != nil {
 		return nil, err
 	}
+
 	err = cmd.Run()
 	done.Wait()
+
 	status, err := exitStatus(err)
 	if err != nil {
 		return nil, err
 	}
+
 	if status.Status == 0 {
 		return &ssh.Permissions{
 			Extensions: map[string]string{
@@ -149,6 +162,7 @@ func handleAuth(handler []string, conn ssh.ConnMetadata, key ssh.PublicKey) (*ss
 	} else {
 		log.Println("auth-handler status:", status.Status)
 	}
+
 	return nil, ErrUnauthorized
 }
 
@@ -179,10 +193,12 @@ func main() {
 	if err != nil {
 		log.Fatalln("Unable to parse authchecker command:", err)
 	}
+
 	authHandler[0], err = filepath.Abs(authHandler[0])
 	if err != nil {
 		log.Fatalln("Invalid authchecker path:", err)
 	}
+
 	config := &ssh.ServerConfig{
 		PublicKeyCallback: func(conn ssh.ConnMetadata, key ssh.PublicKey) (*ssh.Permissions, error) {
 			return handleAuth(authHandler, conn, key)
@@ -223,6 +239,7 @@ func main() {
 
 func handleConn(conn net.Conn, conf *ssh.ServerConfig, execHandler []string) {
 	defer conn.Close()
+
 	sshConn, chans, reqs, err := ssh.NewServerConn(conn, conf)
 	if err != nil {
 		log.Println("Failed to handshake:", err)
@@ -246,7 +263,9 @@ func handleChannel(conn *ssh.ServerConn, newChan ssh.NewChannel, execHandler []s
 		log.Println("newChan.Accept failed:", err)
 		return
 	}
+
 	defer ch.Close()
+
 	for req := range reqs {
 		switch req.Type {
 		case "exec":
@@ -264,7 +283,9 @@ func handleChannel(conn *ssh.ServerConn, newChan ssh.NewChannel, execHandler []s
 			}
 
 			cmdline := string(req.Payload[4:])
+
 			var cmd *exec.Cmd
+
 			if *shell {
 				shellcmd := flag.Arg(1) + " " + cmdline
 				cmd = exec.Command(os.Getenv("SHELL"), "-c", shellcmd)
@@ -275,9 +296,11 @@ func handleChannel(conn *ssh.ServerConn, newChan ssh.NewChannel, execHandler []s
 				}
 				cmd = exec.Command(execHandler[0], append(execHandler[1:], cmdargs...)...)
 			}
+
 			if !*env {
 				cmd.Env = []string{}
 			}
+
 			if conn.Permissions != nil {
 				// Using Permissions.Extensions as a way to get state from PublicKeyCallback
 				if conn.Permissions.Extensions["environ"] != "" {
@@ -285,8 +308,11 @@ func handleChannel(conn *ssh.ServerConn, newChan ssh.NewChannel, execHandler []s
 				}
 				cmd.Env = append(cmd.Env, "USER="+conn.Permissions.Extensions["user"])
 			}
+
 			cmd.Env = append(cmd.Env, "SSH_ORIGINAL_COMMAND="+cmdline)
+
 			var stdout, stderr io.Writer
+
 			if *debug {
 				stdout = io.MultiWriter(ch, os.Stdout)
 				stderr = io.MultiWriter(ch.Stderr(), os.Stdout)
@@ -294,6 +320,7 @@ func handleChannel(conn *ssh.ServerConn, newChan ssh.NewChannel, execHandler []s
 				stdout = ch
 				stderr = ch.Stderr()
 			}
+
 			done, err := attachCmd(cmd, stdout, stderr, ch)
 			if assert("attachCmd", err) {
 				return
@@ -301,14 +328,20 @@ func handleChannel(conn *ssh.ServerConn, newChan ssh.NewChannel, execHandler []s
 			if assert("cmd.Start", cmd.Start()) {
 				return
 			}
+
 			done.Wait()
+
 			status, err := exitStatus(cmd.Wait())
+
 			if assert("exitStatus", err) {
 				return
 			}
+
 			_, err = ch.SendRequest("exit-status", false, ssh.Marshal(&status))
 			assert("sendExit", err)
+
 			return
+
 		case "env":
 			if req.WantReply {
 				req.Reply(true, nil)
