@@ -1,0 +1,12 @@
+#!/bin/bash
+
+USER="$1"
+KEY="$2"
+
+generate_fingerprint() {
+  awk '{print $2}' | base64 -d | md5sum | awk '{print $1}' | sed -e 's/../:&/2g'
+}
+
+echo "FINGERPRINT=$(echo "$KEY" | generate_fingerprint)"
+
+exit 0
