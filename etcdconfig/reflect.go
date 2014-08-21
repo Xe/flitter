@@ -31,7 +31,7 @@ func Demarshall(etcd *etcd.Client, target interface{}) (err error) {
 		case reflect.String:
 			etcdval, err := etcd.Get(tag.Get("etcd"), false, false)
 			if err != nil {
-				return err
+				valueField.SetString("")
 			}
 
 			valueField.Set(reflect.ValueOf(etcdval.Node.Value))
