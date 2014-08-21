@@ -307,6 +307,7 @@ func handleChannel(conn *ssh.ServerConn, newChan ssh.NewChannel, execHandler []s
 					cmd.Env = append(cmd.Env, strings.Split(conn.Permissions.Extensions["environ"], "\n")...)
 				}
 				cmd.Env = append(cmd.Env, "USER="+conn.Permissions.Extensions["user"])
+				cmd.Env = append(cmd.Env, "REMOTE_HOST="+conn.RemoteAddr().String())
 			}
 
 			cmd.Env = append(cmd.Env, "SSH_ORIGINAL_COMMAND="+cmdline)
