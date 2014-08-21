@@ -1,15 +1,14 @@
 package etcdconfig
 
 import (
-	"log"
 	"reflect"
 
 	"github.com/coreos/go-etcd/etcd"
 )
 
 // Demarshall takes an etcd client and a an anonymous interface to
-// seed with values from etcd. This will throw an error if any one of the keys
-// in the struct tags does not resolve to a value in etcd.
+// seed with values from etcd. This will throw an error if there is an exceptional
+// error in the etcd client.
 func Demarshall(etcd *etcd.Client, target interface{}) (err error) {
 	val := reflect.ValueOf(target).Elem()
 
@@ -17,8 +16,6 @@ func Demarshall(etcd *etcd.Client, target interface{}) (err error) {
 		valueField := val.Field(i)
 		typeField := val.Type().Field(i)
 		tag := typeField.Tag
-
-		log.Printf("Trying to get %s...", tag.Get("etcd"))
 
 		switch valueField.Kind() {
 		case reflect.Bool:

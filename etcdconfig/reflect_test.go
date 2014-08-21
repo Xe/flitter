@@ -28,4 +28,16 @@ func TestBasicConfigScraping(t *testing.T) {
 	}
 
 	log.Printf("%v", cfg)
+
+	if cfg.DefinedString != "bar" {
+		t.Fatalf("DefinedString is %v, expected \"bar\"", cfg.DefinedString)
+	}
+
+	if !cfg.DefinedBool {
+		t.Fatal("DefinedBool should be true, it is false.")
+	}
+
+	if cfg.UndefinedBool {
+		t.Fatal("UndefinedBool should be false, it is true.")
+	}
 }
