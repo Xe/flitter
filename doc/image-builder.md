@@ -4,6 +4,12 @@
 git push -> git repo -> builder -> docker image -> deploy to deis
 ```
 
+## Settings
+
+- [ ] Prefer Dockerfile or Procfile
+- [ ] Slugbuilder/Slugrunner image
+- [ ] `DOCKERFILE_SHIM` image
+
 ## Builder Process
 
 - [ ] Create temporary directory
