@@ -23,3 +23,5 @@ _testmain.go
 *.test
 
 execd/execd
+builder/builder
+sketch
