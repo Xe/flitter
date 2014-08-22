@@ -5,15 +5,15 @@ import "fmt"
 
 // WriteHeader writes a heroku style header.
 func WriteHeader(text interface{}) {
-	fmt.Printf("-----> %s", text)
+	fmt.Printf("-----> %s\n", text)
 }
 
 // WriteData spaces data out and writes it.
 func WriteData(text interface{}) {
-	fmt.Printf("       %s", text)
+	fmt.Printf("       %s\n", text)
 }
 
 // WriteError signifies an error condition.
 func WriteError(text interface{}) {
-	fmt.Printf("     ! %s", text)
+	fmt.Printf("     ! %s\n", text)
 }
