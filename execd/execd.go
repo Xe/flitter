@@ -139,17 +139,23 @@ func parseKeys(conf *ssh.ServerConfig, pemData []byte) error {
 }
 
 func handleAuth(conn ssh.ConnMetadata, key ssh.PublicKey) (*ssh.Permissions, error) {
+	if conn.User() != "git" {
+		return nil, ErrUnauthorized
+	}
+
 	keydata := string(bytes.TrimSpace(ssh.MarshalAuthorizedKey(key)))
 
 	etcd := etcd.NewClient([]string{*etcduplink})
 
-	if CanConnect(etcd, conn.User(), keydata) {
-		fp := getFingerprint(keydata)
-		log.Printf("User %s accepted with fingerprint %s", conn.User(), fp)
+	fp := getFingerprint(keydata)
+
+	user, allowed := CanConnect(etcd, keydata)
+	if allowed {
+		log.Printf("User %s accepted with fingerprint %s", user, fp)
 		return &ssh.Permissions{
 			Extensions: map[string]string{
-				"environ": fmt.Sprintf("USER=%s\nKEY='%s'\nFINGERPRINT=%s\n", conn.User(), keydata, fp),
-				"user":    conn.User(),
+				"environ": fmt.Sprintf("USER=%s\nKEY='%s'\nFINGERPRINT=%s\n", user, keydata, fp),
+				"user":    user,
 			},
 		}, nil
 	} else {

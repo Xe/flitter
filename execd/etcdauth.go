@@ -5,24 +5,31 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io"
+	"log"
 	"strings"
 
 	"github.com/coreos/go-etcd/etcd"
 )
 
-func CanConnect(e *etcd.Client, user, key string) bool {
-	reply, err := e.Get("/deis/builder/users/"+user, false, false)
+func CanConnect(e *etcd.Client, sshkey string) (user string, allowed bool) {
+	reply, err := e.Get("/deis/builder/users/", true, true)
+
 	if err != nil {
-		return false
+		log.Printf("etcd: %s", err)
+		return "", false
 	}
 
-	for _, node := range reply.Node.Nodes {
-		if node.Value == key {
-			return true
+	for _, userdir := range reply.Node.Nodes {
+		for _, fpnode := range userdir.Nodes {
+			if sshkey == fpnode.Value {
+				userpath := strings.Split(userdir.Key, "/")
+				user := userpath[len(userpath)-1]
+				return user, true
+			}
 		}
 	}
 
-	return false
+	return
 }
 
 func getFingerprint(key string) string {
