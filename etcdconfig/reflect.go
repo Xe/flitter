@@ -11,6 +11,7 @@ import (
 // Demarshal takes an etcd client and a an anonymous interface to
 // seed with values from etcd. This will throw an error if there is an exceptional
 // error in the etcd client or you are invoking this incorrectly with maps.
+// Any missing keys in etcd will be filled in with blank strings.
 func Demarshal(etcd *etcd.Client, target interface{}) (err error) {
 	val := reflect.ValueOf(target).Elem()
 
@@ -54,6 +55,24 @@ func Demarshal(etcd *etcd.Client, target interface{}) (err error) {
 			SetMapOffDir(resp.Node, &valueField, "")
 		}
 	}
+
+	return
+}
+
+// Subscribe continuously updates the target structure with data from etcd as it
+// is changed. This is ideal for things such as configuration or a list of keys for
+// authentication.
+func Subscribe(e *etcd.Client, target interface{}, prefix string) (err error) {
+	updates := make(chan *etcd.Response, 10)
+	e.Watch(prefix, 0, true, updates, make(chan bool))
+
+	go func() {
+		for update := range updates {
+			_ = update // TODO: replace me with a better method
+
+			Demarshal(e, target)
+		}
+	}()
 
 	return
 }
