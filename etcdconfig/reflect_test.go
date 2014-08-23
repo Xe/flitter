@@ -24,9 +24,15 @@ func TestBasicConfigScraping(t *testing.T) {
 	etcd.CreateDir("/test", 0)
 	etcd.Create("/test/definedstring", "bar", 0)
 	etcd.Create("/test/definedbool", "this will be ignored", 0)
+
+	// Test map parsing
 	etcd.CreateDir("/test/map", 0)
 	etcd.Create("/test/map/foo", "foo", 0)
 	etcd.Create("/test/map/bar", "bar", 0)
+
+	// Test map subdirectory parsing
+	etcd.CreateDir("/test/map/spam", 0)
+	etcd.Create("/test/map/spam/eggs", "sausage", 0)
 
 	err := Demarshall(etcd, cfg)
 	if err != nil {
