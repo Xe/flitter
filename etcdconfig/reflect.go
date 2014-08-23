@@ -57,6 +57,7 @@ func Demarshall(etcd *etcd.Client, target interface{}) (err error) {
 				}
 
 				key := strings.TrimPrefix(node.Key, resp.Node.Key)
+				key = strings.TrimPrefix(key, "/")
 				value := node.Value
 
 				valueField.SetMapIndex(reflect.ValueOf(key), reflect.ValueOf(value))
