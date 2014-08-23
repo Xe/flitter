@@ -1,3 +1,7 @@
+/*
+Command execd is a simple SSH server that allows a user to run single commands on a remote server,
+suitable for things like git deploys.
+*/
 package main
 
 import (
