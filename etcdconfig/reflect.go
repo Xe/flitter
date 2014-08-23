@@ -1,7 +1,9 @@
 package etcdconfig
 
 import (
+	"errors"
 	"reflect"
+	"strings"
 
 	"github.com/coreos/go-etcd/etcd"
 )
@@ -32,7 +34,35 @@ func Demarshall(etcd *etcd.Client, target interface{}) (err error) {
 			}
 
 			valueField.Set(reflect.ValueOf(etcdval.Node.Value))
+
+		case reflect.Map:
+			keyKind := typeField.Type.Key().Kind()
+
+			if keyKind != reflect.String {
+				return errors.New("Map must be string[string]")
+			}
+
+			resp, err := etcd.Get(tag.Get("etcd"), true, true)
+			if err != nil {
+				return err
+			}
+
+			if !resp.Node.Dir {
+				return errors.New("maps must be pointed at an etcd directory")
+			}
+
+			for _, node := range resp.Node.Nodes {
+				if node.Dir {
+					continue
+				}
+
+				key := strings.TrimPrefix(node.Key, resp.Node.Key)
+				value := node.Value
+
+				valueField.SetMapIndex(reflect.ValueOf(key), reflect.ValueOf(value))
+			}
 		}
+
 	}
 
 	return
