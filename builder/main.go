@@ -62,7 +62,7 @@ that Flitter is tracking.
 
 	//_ = config
 
-	if !magicHasPermissionForApp(user, repo) {
+	if !mockHasPermissionForApp(user, repo) {
 		output.WriteError("No permission for " + repo)
 		os.Exit(1)
 	}
