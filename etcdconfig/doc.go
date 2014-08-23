@@ -14,7 +14,7 @@ will be added as time goes on. Usage is very simple:
     	Baz map[string]string `etcd:"/test/baz"`
     }
 
-    Demarshall(etcd, someStruct)
+    Demarshal(etcd, someStruct)
 
 A string will always have its value copied verbatim.
 

@@ -34,7 +34,7 @@ func TestBasicConfigScraping(t *testing.T) {
 	etcd.CreateDir("/test/map/spam", 0)
 	etcd.Create("/test/map/spam/eggs", "sausage", 0)
 
-	err := Demarshall(etcd, cfg)
+	err := Demarshal(etcd, cfg)
 	if err != nil {
 		t.Fatal(err)
 	}

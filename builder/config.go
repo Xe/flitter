@@ -30,7 +30,7 @@ func NewConfig(prefix, uplink string) (c *Config) {
 		stop:    make(chan bool),
 	}
 
-	etcdconfig.Demarshall(c.etcd, c)
+	etcdconfig.Demarshal(c.etcd, c)
 
 	c.etcd.Watch(prefix, 0, true, c.updates, c.stop)
 
@@ -38,7 +38,7 @@ func NewConfig(prefix, uplink string) (c *Config) {
 		for update := range c.updates {
 			_ = update // TODO: replace me with a better method
 
-			etcdconfig.Demarshall(c.etcd, c)
+			etcdconfig.Demarshal(c.etcd, c)
 		}
 	}()
 

@@ -8,10 +8,10 @@ import (
 	"github.com/coreos/go-etcd/etcd"
 )
 
-// Demarshall takes an etcd client and a an anonymous interface to
+// Demarshal takes an etcd client and a an anonymous interface to
 // seed with values from etcd. This will throw an error if there is an exceptional
 // error in the etcd client or you are invoking this incorrectly with maps.
-func Demarshall(etcd *etcd.Client, target interface{}) (err error) {
+func Demarshal(etcd *etcd.Client, target interface{}) (err error) {
 	val := reflect.ValueOf(target).Elem()
 
 	for i := 0; i < val.NumField(); i++ {
