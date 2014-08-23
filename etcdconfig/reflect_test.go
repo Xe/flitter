@@ -8,19 +8,25 @@ import (
 )
 
 type ValidTestConfig struct {
-	DefinedString string `etcd:"/test/definedstring"`
-	DefinedBool   bool   `etcd:"/test/definedbool"`
-	UndefinedBool bool   `etcd:"/test/undefinedbool"`
+	DefinedString string            `etcd:"/test/definedstring"`
+	DefinedBool   bool              `etcd:"/test/definedbool"`
+	UndefinedBool bool              `etcd:"/test/undefinedbool"`
+	TestMap       map[string]string `etcd:"/test/map"`
 }
 
 // Test basic confguration scraping from etcd
 func TestBasicConfigScraping(t *testing.T) {
-	cfg := &ValidTestConfig{}
+	cfg := &ValidTestConfig{
+		TestMap: make(map[string]string),
+	}
 	etcd := etcd.NewClient([]string{"http://127.0.0.1:4001"})
 
 	etcd.CreateDir("/test", 0)
 	etcd.Create("/test/definedstring", "bar", 0)
 	etcd.Create("/test/definedbool", "this will be ignored", 0)
+	etcd.CreateDir("/test/map", 0)
+	etcd.Create("/test/map/foo", "foo", 0)
+	etcd.Create("/test/map/bar", "bar", 0)
 
 	err := Demarshall(etcd, cfg)
 	if err != nil {

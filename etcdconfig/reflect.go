@@ -63,7 +63,6 @@ func Demarshall(etcd *etcd.Client, target interface{}) (err error) {
 				valueField.SetMapIndex(reflect.ValueOf(key), reflect.ValueOf(value))
 			}
 		}
-
 	}
 
 	return
