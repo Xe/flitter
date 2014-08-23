@@ -10,7 +10,7 @@ import (
 
 // Demarshall takes an etcd client and a an anonymous interface to
 // seed with values from etcd. This will throw an error if there is an exceptional
-// error in the etcd client.
+// error in the etcd client or you are invoking this incorrectly with maps.
 func Demarshall(etcd *etcd.Client, target interface{}) (err error) {
 	val := reflect.ValueOf(target).Elem()
 
@@ -51,19 +51,24 @@ func Demarshall(etcd *etcd.Client, target interface{}) (err error) {
 				return errors.New("maps must be pointed at an etcd directory")
 			}
 
-			for _, node := range resp.Node.Nodes {
-				if node.Dir {
-					continue
-				}
-
-				key := strings.TrimPrefix(node.Key, resp.Node.Key)
-				key = strings.TrimPrefix(key, "/")
-				value := node.Value
-
-				valueField.SetMapIndex(reflect.ValueOf(key), reflect.ValueOf(value))
-			}
+			SetMapOffDir(resp.Node, &valueField, "")
 		}
 	}
 
 	return
+}
+
+// SetMapOffDir sets a map based off of an etcd directory and its contents.
+func SetMapOffDir(parent *etcd.Node, target *reflect.Value, tack string) {
+	for _, node := range parent.Nodes {
+		key := strings.TrimPrefix(node.Key, parent.Key)
+		key = tack + strings.TrimPrefix(key, "/")
+		value := node.Value
+
+		if node.Dir {
+			SetMapOffDir(node, target, key+"/")
+		} else {
+			target.SetMapIndex(reflect.ValueOf(key), reflect.ValueOf(value))
+		}
+	}
 }
