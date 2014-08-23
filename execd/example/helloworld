@@ -1,4 +1,5 @@
 #!/bin/bash
+env
 echo "Hello world"
 read hello
 echo "OK: $hello"

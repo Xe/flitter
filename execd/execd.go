@@ -141,14 +141,14 @@ func parseKeys(conf *ssh.ServerConfig, pemData []byte) error {
 func handleAuth(conn ssh.ConnMetadata, key ssh.PublicKey) (*ssh.Permissions, error) {
 	keydata := string(bytes.TrimSpace(ssh.MarshalAuthorizedKey(key)))
 
-	log.Printf("Connection from: %s with key %s", conn.RemoteAddr().String(), ssh.MarshalAuthorizedKey(key))
-
 	etcd := etcd.NewClient([]string{*etcduplink})
 
 	if CanConnect(etcd, conn.User(), keydata) {
+		fp := getFingerprint(keydata)
+		log.Printf("User %s accepted with fingerprint %s", conn.User(), fp)
 		return &ssh.Permissions{
 			Extensions: map[string]string{
-				"environ": fmt.Sprintf("USER=%s\nKEY='%s'\n", conn.User(), keydata),
+				"environ": fmt.Sprintf("USER=%s\nKEY='%s'\nFINGERPRINT=%s\n", conn.User(), keydata, fp),
 				"user":    conn.User(),
 			},
 		}, nil
@@ -185,6 +185,9 @@ func main() {
 	config := &ssh.ServerConfig{
 		PublicKeyCallback: func(conn ssh.ConnMetadata, key ssh.PublicKey) (*ssh.Permissions, error) {
 			return handleAuth(conn, key)
+		},
+		AuthLogCallback: func(conn ssh.ConnMetadata, method string, err error) {
+			log.Printf("Connection from %s", conn.RemoteAddr().String())
 		},
 	}
 
