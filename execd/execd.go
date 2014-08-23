@@ -23,6 +23,7 @@ import (
 	"syscall"
 
 	"code.google.com/p/go.crypto/ssh"
+	"github.com/coreos/go-etcd/etcd"
 	"github.com/flynn/go-shlex"
 )
 
@@ -31,6 +32,7 @@ var debug = flag.Bool("d", false, "debug mode displays handler output")
 var env = flag.Bool("e", false, "pass environment to handlers")
 var shell = flag.Bool("s", false, "run exec handler via SHELL")
 var keys = flag.String("k", "", "pem file of private keys (read from SSH_PRIVATE_KEYS by default)")
+var etcduplink = flag.String("E", "http://127.0.0.1:4001", "etcd node to connect to")
 
 var ErrUnauthorized = errors.New("execd: user is unauthorized")
 
@@ -138,33 +140,20 @@ func parseKeys(conf *ssh.ServerConfig, pemData []byte) error {
 
 func handleAuth(handler []string, conn ssh.ConnMetadata, key ssh.PublicKey) (*ssh.Permissions, error) {
 	keydata := string(bytes.TrimSpace(ssh.MarshalAuthorizedKey(key)))
-	cmd := exec.Command(handler[0], append(handler[1:], conn.User(), keydata)...)
-	var output bytes.Buffer
 
 	log.Printf("Connection from: %s with key %s", conn.RemoteAddr().String(), ssh.MarshalAuthorizedKey(key))
 
-	done, err := attachCmd(cmd, &output, &output, nil)
-	if err != nil {
-		return nil, err
-	}
+	etcd := etcd.NewClient([]string{*etcduplink})
 
-	err = cmd.Run()
-	done.Wait()
-
-	status, err := exitStatus(err)
-	if err != nil {
-		return nil, err
-	}
-
-	if status.Status == 0 {
+	if CanConnect(etcd, conn.User(), keydata) {
 		return &ssh.Permissions{
 			Extensions: map[string]string{
-				"environ": strings.Trim(output.String(), "\n"),
+				"environ": fmt.Sprintf("USER=%s\nKEY='%s'\n", conn.User(), keydata),
 				"user":    conn.User(),
 			},
 		}, nil
 	} else {
-		log.Println("auth-handler status:", status.Status)
+		log.Printf("Connection from %s rejected (bad key)", conn.RemoteAddr().String())
 	}
 
 	return nil, ErrUnauthorized

@@ -1,25 +1,18 @@
 package main
 
-import (
-	"github.com/Xe/flitter/etcdconfig"
-	"github.com/coreos/go-etcd/etcd"
-)
+import "github.com/coreos/go-etcd/etcd"
 
-// Struct KeySet represents the set of keys that a user could authenticate as.
-type KeySet struct {
-	Keys map[string]string `etcd:"/deis/builder/users"`
-}
-
-// GetKeySet returns a new KeySet for checking authentication.
-func GetKeySet() (keyset *KeySet) {
-	keyset = &KeySet{
-		Keys: make(map[string]string),
+func CanConnect(e *etcd.Client, user, key string) bool {
+	reply, err := e.Get("/deis/builder/users/"+user, false, false)
+	if err != nil {
+		return false
 	}
 
-	client := etcd.NewClient([]string{"http://127.0.0.1:4001"})
+	for _, node := range reply.Node.Nodes {
+		if node.Value == key {
+			return true
+		}
+	}
 
-	etcdconfig.Demarshal(client, keyset)
-	etcdconfig.Subscribe(client, keyset, "/deis/builder/users")
-
-	return
+	return false
 }
