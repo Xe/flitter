@@ -1,5 +1,13 @@
 # execd
 
+## Note
+
+This is a fork of execd by [progrium](http://github.com/progrium). This version 
+of execd is far different, but for posterity the original readme is included 
+below.
+
+---
+
 A very lightweight SSH server frontend written in Go. The backend auth and execution logic is handled by commands you specify, letting you customize its behavior via your own scripts/executables.
 
 ## Using execd

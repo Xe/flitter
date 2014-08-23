@@ -138,7 +138,7 @@ func parseKeys(conf *ssh.ServerConfig, pemData []byte) error {
 	}
 }
 
-func handleAuth(handler []string, conn ssh.ConnMetadata, key ssh.PublicKey) (*ssh.Permissions, error) {
+func handleAuth(conn ssh.ConnMetadata, key ssh.PublicKey) (*ssh.Permissions, error) {
 	keydata := string(bytes.TrimSpace(ssh.MarshalAuthorizedKey(key)))
 
 	log.Printf("Connection from: %s with key %s", conn.RemoteAddr().String(), ssh.MarshalAuthorizedKey(key))
@@ -161,19 +161,19 @@ func handleAuth(handler []string, conn ssh.ConnMetadata, key ssh.PublicKey) (*ss
 
 func init() {
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "Usage: %v [options] <auth-handler> <exec-handler>\n\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "Usage: %v [options] <exec-handler>\n\n", os.Args[0])
 		flag.PrintDefaults()
 	}
 }
 
 func main() {
 	flag.Parse()
-	if flag.NArg() < 2 {
+	if flag.NArg() < 1 {
 		flag.Usage()
 		os.Exit(64)
 	}
 
-	execHandler, err := shlex.Split(flag.Arg(1))
+	execHandler, err := shlex.Split(flag.Arg(0))
 	if err != nil {
 		log.Fatalln("Unable to parse receiver command:", err)
 	}
@@ -182,19 +182,9 @@ func main() {
 		log.Fatalln("Invalid receiver path:", err)
 	}
 
-	authHandler, err := shlex.Split(flag.Arg(0))
-	if err != nil {
-		log.Fatalln("Unable to parse authchecker command:", err)
-	}
-
-	authHandler[0], err = filepath.Abs(authHandler[0])
-	if err != nil {
-		log.Fatalln("Invalid authchecker path:", err)
-	}
-
 	config := &ssh.ServerConfig{
 		PublicKeyCallback: func(conn ssh.ConnMetadata, key ssh.PublicKey) (*ssh.Permissions, error) {
-			return handleAuth(authHandler, conn, key)
+			return handleAuth(conn, key)
 		},
 	}
 
@@ -215,10 +205,12 @@ func main() {
 	if p := os.Getenv("PORT"); p != "" && *port == "22" {
 		*port = p
 	}
+
 	listener, err := net.Listen("tcp", ":"+*port)
 	if err != nil {
 		log.Fatalln("Failed to listen for connections:", err)
 	}
+
 	for {
 		// SSH connections just house multiplexed connections
 		conn, err := listener.Accept()
