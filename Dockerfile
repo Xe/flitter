@@ -1,9 +1,7 @@
-FROM deis/init
+FROM deis/go
 
-ENV GOPATH /go
+ADD . /go/src/github.com/Xe/flitter
+ENV CGO_ENABLED 0
 
-RUN apt-get update && apt-get upgrade -y && \
-    apt-get install -y git golang mercurial && mkdir /go && \
-    go get github.com/Xe/flitter/builder && go get github.com/Xe/flitter/execd
-
-ENTRYPOINT /sbin/my_init
+RUN go get -a -ldflags '-s' github.com/Xe/flitter/builder && \
+    go get -a -ldflags '-s' github.com/Xe/flitter/execd
