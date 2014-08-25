@@ -189,6 +189,9 @@ func main() {
 		log.Fatalln("Failed to listen for connections:", err)
 	}
 
+	fmt.Println(logo)
+	log.Printf("execd is now listening on port %s", *port)
+
 	for {
 		// SSH connections just house multiplexed connections
 		conn, err := listener.Accept()
