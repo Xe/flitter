@@ -30,7 +30,6 @@ import (
 var port = flag.String("p", "22", "port to listen on")
 var debug = flag.Bool("d", false, "debug mode displays handler output")
 var env = flag.Bool("e", false, "pass environment to handlers")
-var shell = flag.Bool("s", false, "run exec handler via SHELL")
 var keys = flag.String("k", "", "pem file of private keys (read from SSH_PRIVATE_KEYS by default)")
 var etcduplink = flag.String("E", "http://127.0.0.1:4001", "etcd node to connect to")
 
@@ -280,16 +279,11 @@ func handleChannel(conn *ssh.ServerConn, newChan ssh.NewChannel, execHandler []s
 
 			var cmd *exec.Cmd
 
-			if *shell {
-				shellcmd := flag.Arg(1) + " " + cmdline
-				cmd = exec.Command(os.Getenv("SHELL"), "-c", shellcmd)
-			} else {
-				cmdargs, err := shlex.Split(cmdline)
-				if assert("shlex.Split", err) {
-					return
-				}
-				cmd = exec.Command(execHandler[0], append(execHandler[1:], cmdargs...)...)
+			cmdargs, err := shlex.Split(cmdline)
+			if assert("shlex.Split", err) {
+				return
 			}
+			cmd = exec.Command(execHandler[0], append(execHandler[1:], cmdargs...)...)
 
 			if !*env {
 				cmd.Env = []string{}
