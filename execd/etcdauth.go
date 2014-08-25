@@ -48,9 +48,14 @@ func CanConnect(e *etcd.Client, sshkey string) (user string, allowed bool) {
 		return "", false
 	}
 
+	fp := getFingerprint(sshkey)
+
 	for _, userdir := range reply.Node.Nodes {
 		for _, fpnode := range userdir.Nodes {
-			if sshkey == fpnode.Value {
+			thisFpSplit := strings.Split(fpnode.Key, "/")
+			thisFp := thisFpSplit[len(thisFpSplit)-1]
+
+			if fp == thisFp {
 				userpath := strings.Split(userdir.Key, "/")
 				user := userpath[len(userpath)-1]
 				return user, true
