@@ -5,7 +5,6 @@ suitable for things like git deploys.
 package main
 
 import (
-	"bytes"
 	"crypto/x509"
 	"encoding/pem"
 	"errors"
@@ -23,7 +22,6 @@ import (
 	"syscall"
 
 	"code.google.com/p/go.crypto/ssh"
-	"github.com/coreos/go-etcd/etcd"
 	"github.com/flynn/go-shlex"
 )
 
@@ -137,33 +135,6 @@ func parseKeys(conf *ssh.ServerConfig, pemData []byte) error {
 	}
 }
 
-func handleAuth(conn ssh.ConnMetadata, key ssh.PublicKey) (*ssh.Permissions, error) {
-	if conn.User() != "git" {
-		return nil, ErrUnauthorized
-	}
-
-	keydata := string(bytes.TrimSpace(ssh.MarshalAuthorizedKey(key)))
-
-	etcd := etcd.NewClient([]string{*etcduplink})
-
-	fp := getFingerprint(keydata)
-
-	user, allowed := CanConnect(etcd, keydata)
-	if allowed {
-		log.Printf("User %s accepted with fingerprint %s", user, fp)
-		return &ssh.Permissions{
-			Extensions: map[string]string{
-				"environ": fmt.Sprintf("USER=%s\nKEY='%s'\nFINGERPRINT=%s\n", user, keydata, fp),
-				"user":    user,
-			},
-		}, nil
-	} else {
-		log.Printf("Connection from %s rejected (bad key)", conn.RemoteAddr().String())
-	}
-
-	return nil, ErrUnauthorized
-}
-
 func init() {
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage: %v [options] <exec-handler>\n\n", os.Args[0])
@@ -192,7 +163,6 @@ func main() {
 			return handleAuth(conn, key)
 		},
 		AuthLogCallback: func(conn ssh.ConnMetadata, method string, err error) {
-			log.Printf("Connection from %s", conn.RemoteAddr().String())
 		},
 	}
 
@@ -271,19 +241,37 @@ func handleChannel(conn *ssh.ServerConn, newChan ssh.NewChannel, execHandler []s
 				return false
 			}
 
+			defer func() {
+				log.Printf("Connection lost from %s", conn.RemoteAddr().String())
+			}()
+
 			if req.WantReply {
 				req.Reply(true, nil)
 			}
 
 			cmdline := string(req.Payload[4:])
 
-			var cmd *exec.Cmd
-
 			cmdargs, err := shlex.Split(cmdline)
 			if assert("shlex.Split", err) {
 				return
 			}
-			cmd = exec.Command(execHandler[0], append(execHandler[1:], cmdargs...)...)
+
+			if len(cmdargs) != 2 {
+				ch.Stderr().Write([]byte("Invalid arguments.\n"))
+				return
+			}
+
+			if cmdargs[0] != "git-recieve-pack" {
+				ch.Stderr().Write([]byte("Only `git push` is supported.\n"))
+				return
+			}
+
+			user := conn.Permissions.Extensions["user"]
+			reponame := strings.TrimSuffix(strings.TrimPrefix(cmdargs[1], "/"), ".git")
+
+			log.Printf("Push from %s at %s", user, reponame)
+
+			cmd := exec.Command(execHandler[0], append(execHandler[1:], cmdargs...)...)
 
 			if !*env {
 				cmd.Env = []string{}
@@ -296,6 +284,7 @@ func handleChannel(conn *ssh.ServerConn, newChan ssh.NewChannel, execHandler []s
 				}
 				cmd.Env = append(cmd.Env, "USER="+conn.Permissions.Extensions["user"])
 				cmd.Env = append(cmd.Env, "REMOTE_HOST="+conn.RemoteAddr().String())
+				cmd.Env = append(cmd.Env, "REPO="+reponame)
 			}
 
 			cmd.Env = append(cmd.Env, "SSH_ORIGINAL_COMMAND="+cmdline)

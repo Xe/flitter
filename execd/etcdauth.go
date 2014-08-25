@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"crypto/md5"
 	"encoding/base64"
 	"fmt"
@@ -8,8 +9,36 @@ import (
 	"log"
 	"strings"
 
+	"code.google.com/p/go.crypto/ssh"
 	"github.com/coreos/go-etcd/etcd"
 )
+
+func handleAuth(conn ssh.ConnMetadata, key ssh.PublicKey) (*ssh.Permissions, error) {
+	if conn.User() != "git" {
+		return nil, ErrUnauthorized
+	}
+
+	keydata := string(bytes.TrimSpace(ssh.MarshalAuthorizedKey(key)))
+
+	etcd := etcd.NewClient([]string{*etcduplink})
+
+	fp := getFingerprint(keydata)
+
+	user, allowed := CanConnect(etcd, keydata)
+	if allowed {
+		log.Printf("User %s (%s) accepted with fingerprint %s", user, conn.RemoteAddr().String(), fp)
+		return &ssh.Permissions{
+			Extensions: map[string]string{
+				"environ": fmt.Sprintf("USER=%s\nKEY='%s'\nFINGERPRINT=%s\n", user, keydata, fp),
+				"user":    user,
+			},
+		}, nil
+	} else {
+		log.Printf("Connection from %s rejected (bad key)", conn.RemoteAddr().String())
+	}
+
+	return nil, ErrUnauthorized
+}
 
 func CanConnect(e *etcd.Client, sshkey string) (user string, allowed bool) {
 	reply, err := e.Get("/deis/builder/users/", true, true)
