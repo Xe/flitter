@@ -17,3 +17,4 @@ WORKDIR /app
 EXPOSE 22
 
 ADD . /app
+ADD runit/ /etc/service
