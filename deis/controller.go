@@ -9,6 +9,7 @@ import (
 
 // Struct Controller represents the base data structure for the Deis controller.
 type Controller struct {
+	Protocol string `etcd:"/deis/controller/protocol"`
 	Host     string `etcd:"/deis/controller/host"`
 	Port     string `etcd:"/deis/controller/port"`
 	BuildKey string `etcd:"/deis/controller/builderKey"`
@@ -35,7 +36,7 @@ func NewControllerEtcd(etcdUplink string) (c *Controller) {
 
 // GetURL returns the URL path to the Deis controller.
 func (c *Controller) GetURL() (url string) {
-	url = fmt.Sprintf("http://%s:%s", c.Host, c.Port)
+	url = fmt.Sprintf("%s://%s:%s", c.Protocol, c.Host, c.Port)
 
 	return
 }
