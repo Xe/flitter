@@ -272,7 +272,7 @@ func handleChannel(conn *ssh.ServerConn, newChan ssh.NewChannel) {
 			err = ioutil.WriteFile(reponame+"/hooks/pre-receive", []byte(`#!/bin/bash
 
 set -eo pipefail; while read oldrev newrev refname; do
-	/app/cloudchaser pre $refname
+	/app/cloudchaser pre $newrev
 done`), 0755)
 			if err != nil {
 				return
@@ -281,7 +281,7 @@ done`), 0755)
 			err = ioutil.WriteFile(reponame+"/hooks/post-receive", []byte(`#!/bin/bash
 
 set -eo pipefail; while read oldrev newrev refname; do
-	/app/cloudchaser post $refname
+	/app/builder --etcd-host `+*etcduplink+` $REPO $(echo $refname | rev | cut -d'/' -f1 | rev)
 done`), 0755)
 			if err != nil {
 				return
