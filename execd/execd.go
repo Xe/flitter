@@ -281,7 +281,7 @@ done`), 0755)
 			err = ioutil.WriteFile(reponame+"/hooks/post-receive", []byte(`#!/bin/bash
 
 set -eo pipefail; while read oldrev newrev refname; do
-	/app/builder --etcd-host `+*etcduplink+` $REPO $(echo $refname | rev | cut -d'/' -f1 | rev)
+	/app/builder --etcd-host `+*etcduplink+` $REPO ${refname##*/}
 done`), 0755)
 			if err != nil {
 				return
