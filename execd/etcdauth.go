@@ -29,8 +29,9 @@ func handleAuth(conn ssh.ConnMetadata, key ssh.PublicKey) (*ssh.Permissions, err
 		log.Printf("User %s (%s) accepted with fingerprint %s", user, conn.RemoteAddr().String(), fp)
 		return &ssh.Permissions{
 			Extensions: map[string]string{
-				"environ": fmt.Sprintf("USER=%s\nKEY='%s'\nFINGERPRINT=%s\n", user, keydata, fp),
-				"user":    user,
+				"environ":     fmt.Sprintf("USER=%s\nKEY='%s'\nFINGERPRINT=%s\n", user, keydata, fp),
+				"user":        user,
+				"fingerprint": fp,
 			},
 		}, nil
 	} else {
