@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"os"
 	"os/exec"
 	"sync"
@@ -21,11 +22,9 @@ func makeGitRepo(path string) (err error) {
 		return err
 	}
 
-	err = os.Symlink("/app/receiver", path+"/hooks/pre-receive")
-	if err != nil {
-		return err
-	}
+	log.Println("Created git repo at " + path)
 
+	os.Symlink("/bin/true", path+"/hooks/pre-receive")
 	os.Chmod(path+"/hooks/pre-receive", 0755)
 
 	return
