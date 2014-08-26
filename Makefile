@@ -12,7 +12,7 @@ build:
 image: build
 	docker run -v ${PWD}/$(BUILD_DIR):/$(BUILD_DIR):rw $(BUILD_IMAGE) /bin/sh -c 'cp /go/bin/* /$(BUILD_DIR)/'
 	docker build -t $(DOCKER_IMAGE) $(BUILD_DIR)
-	rm -f $(BUILD_DIR)/builder $(BUILD_DIR)/execd
+	rm -f $(BUILD_DIR)/builder $(BUILD_DIR)/execd $(BUILD_DIR)/cloudchaser
 
 release: image
 	docker tag $(DOCKER_IMAGE) $(RELEASE_IMAGE)
