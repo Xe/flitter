@@ -286,6 +286,26 @@ func handleChannel(conn *ssh.ServerConn, newChan ssh.NewChannel, execHandler []s
 				return
 			}
 
+			log.Printf("Writing hooks...")
+
+			err = ioutil.WriteFile(reponame+"/hooks/pre-receive", []byte(`#!/bin/bash
+
+set -eo pipefail; while read oldrev newrev refname; do
+	/app/cloudchaser pre $refname
+done`), 0755)
+			if err != nil {
+				return
+			}
+
+			err = ioutil.WriteFile(reponame+"/hooks/post-receive", []byte(`#!/bin/bash
+
+set -eo pipefail; while read oldrev newrev refname; do
+	/app/cloudchaser post $refname
+done`), 0755)
+			if err != nil {
+				return
+			}
+
 			log.Printf("Doing git receive...")
 
 			receive := exec.Command("git-receive-pack", reponame)
