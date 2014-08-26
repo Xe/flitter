@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -24,8 +25,20 @@ func makeGitRepo(path string) (err error) {
 
 	log.Println("Created git repo at " + path)
 
-	os.Symlink("/bin/true", path+"/hooks/pre-receive")
-	os.Chmod(path+"/hooks/pre-receive", 0755)
+	err = ioutil.WriteFile(path+"/hooks/pre-receive", []byte(`#!/bin/bash
+
+set -eo pipefail; while read oldrev newrev refname; do
+	/app/cloudchaser pre $refname
+done`), 0755)
+	if err == nil {
+		return err
+	}
+
+	err = ioutil.WriteFile(path+"/hooks/post-receive", []byte(`#!/bin/bash
+
+set -eo pipefail; while read oldrev newrev refname; do
+	/app/cloudchaser post $refname
+done`), 0755)
 
 	return
 }

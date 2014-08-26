@@ -8,4 +8,5 @@ RUN apt-get update && apt-get install -y cmake && \
     go get github.com/libgit2/git2go ; cd $GOPATH/src/github.com/libgit2/git2go && \
     git submodule update --init && make install && \
     go get github.com/Xe/flitter/builder && \
-    go get github.com/Xe/flitter/execd
+    go get github.com/Xe/flitter/execd && \
+    go get github.com/Xe/flitter/cloudchaser
