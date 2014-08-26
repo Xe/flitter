@@ -16,7 +16,6 @@ import (
 	"net"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
 	"sync"
 	"syscall"
@@ -30,8 +29,6 @@ var debug = flag.Bool("d", false, "debug mode displays handler output")
 var env = flag.Bool("e", false, "pass environment to handlers")
 var keys = flag.String("k", "", "pem file of private keys (read from SSH_PRIVATE_KEYS by default)")
 var etcduplink = flag.String("E", "http://127.0.0.1:4001", "etcd node to connect to")
-
-var receiveHandler []string
 
 var ErrUnauthorized = errors.New("execd: user is unauthorized")
 
@@ -148,22 +145,6 @@ func init() {
 
 func main() {
 	flag.Parse()
-	if flag.NArg() < 1 {
-		flag.Usage()
-		os.Exit(64)
-	}
-
-	var err error
-	var execHandler []string
-
-	execHandler, err = shlex.Split(flag.Arg(0))
-	if err != nil {
-		log.Fatalln("Unable to parse execution command:", err)
-	}
-	execHandler[0], err = filepath.Abs(execHandler[0])
-	if err != nil {
-		log.Fatalln("Invalid execution path:", err)
-	}
 
 	config := &ssh.ServerConfig{
 		PublicKeyCallback: func(conn ssh.ConnMetadata, key ssh.PublicKey) (*ssh.Permissions, error) {
@@ -206,11 +187,11 @@ func main() {
 			log.Println("Failed to accept incoming connection:", err)
 			continue
 		}
-		go handleConn(conn, config, execHandler)
+		go handleConn(conn, config)
 	}
 }
 
-func handleConn(conn net.Conn, conf *ssh.ServerConfig, execHandler []string) {
+func handleConn(conn net.Conn, conf *ssh.ServerConfig) {
 	defer conn.Close()
 
 	sshConn, chans, reqs, err := ssh.NewServerConn(conn, conf)
@@ -226,11 +207,11 @@ func handleConn(conn net.Conn, conf *ssh.ServerConfig, execHandler []string) {
 			ch.Reject(ssh.UnknownChannelType, "unknown channel type")
 			continue
 		}
-		go handleChannel(sshConn, ch, execHandler)
+		go handleChannel(sshConn, ch)
 	}
 }
 
-func handleChannel(conn *ssh.ServerConn, newChan ssh.NewChannel, execHandler []string) {
+func handleChannel(conn *ssh.ServerConn, newChan ssh.NewChannel) {
 	ch, reqs, err := newChan.Accept()
 	if err != nil {
 		log.Println("newChan.Accept failed:", err)
@@ -317,16 +298,6 @@ done`), 0755)
 			receive.Env = append(receive.Env, "REMOTE_HOST="+conn.RemoteAddr().String())
 			receive.Env = append(receive.Env, "REPO="+reponame)
 
-			var stdout, stderr io.Writer
-
-			if *debug {
-				stdout = io.MultiWriter(ch, os.Stdout)
-				stderr = io.MultiWriter(ch.Stderr(), os.Stdout)
-			} else {
-				stdout = ch
-				stderr = ch.Stderr()
-			}
-
 			done, err := attachCmd(receive, ch, ch.Stderr(), ch)
 			if err != nil {
 				ch.Stderr().Write([]byte("Error: " + err.Error()))
@@ -341,43 +312,9 @@ done`), 0755)
 
 			log.Printf("Receive done")
 
-			_, rcvErr := exitStatus(receive.Wait())
+			status, rcvErr := exitStatus(receive.Wait())
 			if rcvErr != nil {
 				ch.Stderr().Write([]byte("Error: " + rcvErr.Error()))
-				return
-			}
-
-			cmd := exec.Command(execHandler[0], append(execHandler[1:], cmdargs...)...)
-
-			if !*env {
-				cmd.Env = []string{}
-			}
-
-			if conn.Permissions != nil {
-				// Using Permissions.Extensions as a way to get state from PublicKeyCallback
-				if conn.Permissions.Extensions["environ"] != "" {
-					cmd.Env = append(cmd.Env, strings.Split(conn.Permissions.Extensions["environ"], "\n")...)
-				}
-				cmd.Env = append(cmd.Env, "USER="+conn.Permissions.Extensions["user"])
-				cmd.Env = append(cmd.Env, "REMOTE_HOST="+conn.RemoteAddr().String())
-				cmd.Env = append(cmd.Env, "REPO="+reponame)
-			}
-
-			cmd.Env = append(cmd.Env, "SSH_ORIGINAL_COMMAND="+cmdline)
-
-			done, err = attachCmd(cmd, stdout, stderr, ch)
-			if assert("attachCmd", err) {
-				return
-			}
-			if assert("cmd.Start", cmd.Start()) {
-				return
-			}
-
-			done.Wait()
-
-			status, err := exitStatus(cmd.Wait())
-
-			if assert("exitStatus", err) {
 				return
 			}
 

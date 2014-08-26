@@ -2,4 +2,4 @@
 
 cd /home/git
 
-/app/execd -d -E http://172.17.42.1:4001 -k /app/host_pk.pem /app/cloudchaser
+/app/execd -d -E http://172.17.42.1:4001 -k /app/host_pk.pem
