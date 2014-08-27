@@ -9,9 +9,9 @@ import (
 
 var NotAllowed = errors.New("Not authorized")
 
-// RecieverAuth represents the structure sent to the controller when making a reciever
+// ReceiverAuth represents the structure sent to the controller when making a reciever
 // authentication call.
-type RecieverAuth struct {
+type ReceiverAuth struct {
 	Username        string `json:"receive_user"`
 	Repo            string `json:"receive_repo"`
 	Sha             string `json:"sha"`
@@ -21,7 +21,7 @@ type RecieverAuth struct {
 }
 
 // String satisfies fmt.Stringer.
-func (r *RecieverAuth) String() string {
+func (r *ReceiverAuth) String() string {
 	res, err := json.Marshal(r)
 	if err != nil {
 		return ""
@@ -30,9 +30,9 @@ func (r *RecieverAuth) String() string {
 	return string(res)
 }
 
-// CheckAuthForReciever checks authentication in the Deis controller for permission
+// CheckAuthForReceiver checks authentication in the Deis controller for permission
 // to be able to make a build.
-func (c *Controller) CheckAuthForReciever(r *RecieverAuth) error {
+func (c *Controller) CheckAuthForReceiver(r *ReceiverAuth) error {
 	client := &http.Client{}
 	req, err := http.NewRequest("POST", c.GetURL(), strings.NewReader(r.String()))
 	if err != nil {
