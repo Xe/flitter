@@ -13,11 +13,9 @@ func main() {
 	usage := `Cloudchaser Builder Sentry
 
 Usage:
-  cloudchaser <command> <revision>
+  cloudchaser [options] <revision> <sha>
 
-Commands:
-  pre   runs precommit checks, exits with 1 if a failure happens
-  post  kicks off builder
+Options:
 `
 	arguments, err := docopt.Parse(usage, nil, true, "Flitter Sentry 0.1", false)
 	if err != nil {
@@ -26,13 +24,11 @@ Commands:
 
 	fmt.Println(arguments)
 
-	if arguments["<command>"].(string) == "pre" {
-		output.WriteHeader("Receiver\n")
+	output.WriteHeader("Receiver\n")
 
-		output.WriteHeader("Environment:")
+	output.WriteHeader("Environment:")
 
-		for _, val := range os.Environ() {
-			output.WriteData(val)
-		}
+	for _, val := range os.Environ() {
+		output.WriteData(val)
 	}
 }
