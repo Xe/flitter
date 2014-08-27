@@ -29,6 +29,8 @@ func NewController(host, port string) (c *Controller) {
 // NewControllerEtcd allocates and returns a new controller object with the host
 // and port seeded from etcd.
 func NewControllerEtcd(etcdUplink string) (c *Controller) {
+	c = &Controller{}
+
 	etcdconfig.Demarshal(etcd.NewClient([]string{etcdUplink}), c)
 
 	return
