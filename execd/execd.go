@@ -288,7 +288,7 @@ strip_remote_prefix() {
 }
 
 set -eo pipefail; while read oldrev newrev refname; do
-	/app/builder --etcd-host `+*etcduplink+` $REPO ${refname##*/} | strip_remote_prefix
+	/app/builder --etcd-host `+*etcduplink+` $REPO ${refname##*/} $newrev | strip_remote_prefix
 done`), 0755)
 			if err != nil {
 				return
