@@ -122,7 +122,7 @@ This program assumes it is being run in the bare repository it is building.
 		os.Exit(1)
 	}
 
-	// Grab config from controller / etcd
+	// Grab config from controller
 	// Find the Dockerfile or Procfile
 	var dockerbuild bool
 	if _, err := os.Stat(dir + "/Dockerfile"); os.IsNotExist(err) {
@@ -136,6 +136,18 @@ This program assumes it is being run in the bare repository it is building.
 	}
 
 	// Build docker image
+	output.WriteHeader("Building docker image...")
+	cmd = exec.Command("docker", "build", "-t", repo+":"+sha[:7], dir)
+	cmd.Dir = dir
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stdout
+
+	err = cmd.Run()
+	if err != nil {
+		output.WriteError(err.Error())
+		os.Exit(1)
+	}
+
 	// Tag and push to registry
 	// Extract process types from procfile
 	// Report information about the build
