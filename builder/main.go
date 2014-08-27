@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/Xe/flitter/builder/output"
 	"github.com/docopt/docopt-go"
@@ -133,10 +134,46 @@ This program assumes it is being run in the bare repository it is building.
 
 	if !dockerbuild {
 		// Process through slugbuilder if needed
+		output.WriteHeader("Building Heroku procfile-based app\n")
+
+		// TODO: add environment from deis controller
+		ctidCmd := exec.Command("docker", "run", "-i", "-d", "-v", dir+":/tmp/app", "-v",
+			"/home/git"+repo+"/cache"+":/tmp/cache:rw", "deis/slugbuilder")
+
+		ctidBs, err := ctidCmd.Output()
+		if err != nil {
+			output.WriteError("Error in Heroku build: " + err.Error())
+			os.Exit(1)
+		}
+
+		ctid := strings.TrimSuffix(string(ctidBs), "\n")
+
+		buildCmd := exec.Command("docker", "attach", ctid)
+		buildCmd.Stdout = os.Stdout
+		buildCmd.Stderr = os.Stdout
+
+		err = buildCmd.Run()
+		if err != nil {
+			output.WriteError("Error in Heroku build (attach phase): " + err.Error())
+			os.Exit(1)
+		}
+
+		fout, err := os.Create(dir + "/Dockerfile")
+		if err != nil {
+			output.WriteError("Error in Heroku Dockerfile Create: " + err.Error())
+			os.Exit(1)
+		}
+
+		_, err = fout.Write([]byte(config.DockerfileShim))
+		if err != nil {
+			output.WriteError("Error in Heroku Dockerfile write: " + err.Error())
+		}
+
+		fout.Close()
 	}
 
 	// Build docker image
-	output.WriteHeader("Building docker image...")
+	output.WriteHeader("Building docker image")
 	cmd = exec.Command("docker", "build", "-t", repo+":"+sha[:7], dir)
 	cmd.Dir = dir
 	cmd.Stdout = os.Stdout
