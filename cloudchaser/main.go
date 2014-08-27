@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -21,8 +20,7 @@ Options:
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	fmt.Println(arguments)
+	_ = arguments
 
 	output.WriteHeader("Receiver\n")
 

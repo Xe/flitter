@@ -5,7 +5,6 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
@@ -35,7 +34,6 @@ This program assumes it is being run in the bare repository it is building.
 `
 
 	arguments, _ := docopt.Parse(usage, nil, true, "Flitter Builder 0.1", false)
-	fmt.Println(arguments)
 
 	config := NewConfig(arguments["--etcd-host"].(string))
 	user := os.Getenv("USER")
@@ -115,7 +113,7 @@ This program assumes it is being run in the bare repository it is building.
 	fout.Close()
 
 	// Extract tarball
-	cmd = exec.Command("tar", "xf", dir+"app.tar")
+	cmd = exec.Command("tar", "xf", "app.tar")
 	cmd.Dir = dir
 
 	err = cmd.Run()
