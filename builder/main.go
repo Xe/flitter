@@ -1,23 +1,5 @@
 /*
-Flitter Heroku-ish Slug Builder
-
-Usage:
-
-      builder [options] <repo> <branch>
-
-Options:
-
-      --etcd-host=<host>     Sets the etcd url to use [default: http://172.17.42.1:4001]
-      -h,--help              Show this screen
-      -v,--verbose           Show all raw commands as they are running and
-                             all output of all commands, even ones that are
-                             normally silenced.
-      --version              Show version
-      --repository-tag=<tag> Tags built docker images with <tag> if set and
-                             does not tag them if not.
-
-This program assumes it is being run from the root path of all the repositories
-that Flitter is tracking.
+Command builder is the flitter Heroku-ish slug builder.
 */
 package main
 
@@ -37,7 +19,7 @@ func main() {
 	usage := `Flitter Heroku-ish Slug Builder
 
 Usage:
-  builder [options] <repo> <branch>
+  builder [options] <repo> <branch> <sha>
 
 Options:
   --etcd-host=<host>     Sets the etcd url to use [default: http://172.17.42.1:4001]
@@ -49,8 +31,7 @@ Options:
   --repository-tag=<tag> Tags built docker images with <tag> if set and
                          does not tag them if not.
 
-This program assumes it is being run from the root path of all the repositories
-that Flitter is tracking.
+This program assumes it is being run in the bare repository it is building.
 `
 
 	arguments, _ := docopt.Parse(usage, nil, true, "Flitter Builder 0.1", false)
@@ -62,6 +43,10 @@ that Flitter is tracking.
 	branch := arguments["<branch>"].(string)
 
 	//_ = config
+
+	curdir, err := os.Getwd()
+
+	output.WriteData("Running in " + curdir)
 
 	output.WriteHeader("Building " + repo + " branch " + branch + " as " + user)
 
@@ -78,7 +63,6 @@ that Flitter is tracking.
 	output.WriteHeader("Extracting " + repo + " to " + dir)
 
 	cmd := exec.Command("git", "archive", branch)
-	cmd.Dir = repo
 
 	fout, err := os.Create(dir + "/app.tar")
 	if err != nil {
@@ -86,14 +70,11 @@ that Flitter is tracking.
 		os.Exit(1)
 	}
 
-	cmd.Stdout = fout
 	cmd.Stderr = os.Stderr
 
-	cmd.Run()
-
-	err = cmd.Wait()
+	out, err := cmd.Output()
 	if err != nil {
-		output.WriteError("Git archive problem: " + err.Error())
+		output.WriteHeader("Error in capturing tarball: " + err.Error())
 
 		stderr, err := cmd.StderrPipe()
 		if err != nil {
@@ -117,18 +98,52 @@ that Flitter is tracking.
 
 			output.WriteData(string(line))
 		}
+
+		os.Exit(1)
+	}
+
+	_, err = fout.Write(out)
+	if err != nil {
+		output.WriteHeader("Error in writing tarball: " + err.Error())
 	}
 
 	fout.Sync()
 	fout.Close()
 
+	// Extract tarball
+	cmd = exec.Command("tar", "xf", dir+"app.tar")
+	cmd.Dir = dir
+
+	err = cmd.Run()
+	if err != nil {
+		output.WriteHeader("Error in extracting tarball: " + err.Error())
+		os.Exit(1)
+	}
+
 	// Grab config from controller / etcd
 	// Find the Dockerfile or Procfile
-	// Process through slugbuilder if needed
+	var dockerbuild bool
+	if _, err := os.Stat(dir + "/Dockerfile"); os.IsNotExist(err) {
+		dockerbuild = false
+	} else {
+		dockerbuild = true
+	}
+
+	if !dockerbuild {
+		// Process through slugbuilder if needed
+	}
+
 	// Build docker image
 	// Tag and push to registry
 	// Extract process types from procfile
 	// Report information about the build
 	// Print end message
 	// Do cleanup of repo and builder
+	output.WriteHeader("Cleanup")
+	output.WriteData("Removing temporary files")
+
+	err = os.RemoveAll(dir)
+	if err != nil {
+		output.WriteError("\n" + err.Error())
+	}
 }
