@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/Xe/flitter/deis"
-	"github.com/Xe/flitter/etcdconfig"
 	"github.com/coreos/go-etcd/etcd"
 )
 
@@ -14,6 +13,10 @@ type Config struct {
 	SlugrunnerImage  string `etcd:"/deis/slugrunner/image"`
 	DockerfileShim   string `etcd:"/deis/builder/dockerfileshim"`
 	Controller       *deis.Controller
+	User             string
+	Repo             string
+	Branch           string
+	Sha              string
 	etcd             *etcd.Client
 	updates          chan *etcd.Response
 	stop             chan bool
@@ -24,12 +27,34 @@ type Config struct {
 func NewConfig(uplink string) (c *Config) {
 	c = &Config{
 		etcd:       etcd.NewClient([]string{uplink}),
-		updates:    make(chan *etcd.Response, 10),
-		stop:       make(chan bool),
 		Controller: deis.NewControllerEtcd(uplink),
 	}
 
-	etcdconfig.Demarshal(c.etcd, c)
+	node, err := c.etcd.Get("/deis/slugbuilder/image", false, false)
+	if err != nil {
+		c.SlugbuilderImage = "deis/slugbuilder"
+	} else {
+		c.SlugrunnerImage = node.Node.Value
+	}
+
+	node, err = c.etcd.Get("/deis/slugrunner/image", false, false)
+	if err != nil {
+		c.SlugrunnerImage = "deis/slugrunner"
+	} else {
+		c.SlugrunnerImage = node.Node.Value
+	}
+
+	node, err = c.etcd.Get("/deis/builder/dockerfileshim", false, false)
+	if err != nil {
+		c.DockerfileShim = `FROM ` + c.SlugbuilderImage + `
+RUN mkdir -p /app
+WORKDIR /app
+ENTRYPOINT ["/runner/init"]
+ADD slug.tgz /app
+`
+	} else {
+		c.SlugrunnerImage = node.Node.Value
+	}
 
 	return
 }
