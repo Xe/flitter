@@ -270,9 +270,12 @@ func handleChannel(conn *ssh.ServerConn, newChan ssh.NewChannel) {
 			log.Printf("Writing hooks...")
 
 			err = ioutil.WriteFile(reponame+"/hooks/pre-receive", []byte(`#!/bin/bash
+strip_remote_prefix() {
+	sed -u "s/^/"$'\e[1G'"/"
+}
 
 set -eo pipefail; while read oldrev newrev refname; do
-	/app/cloudchaser pre $newrev
+	/app/cloudchaser pre $newrev | strip_remote_prefix
 done`), 0755)
 			if err != nil {
 				return
@@ -280,8 +283,12 @@ done`), 0755)
 
 			err = ioutil.WriteFile(reponame+"/hooks/post-receive", []byte(`#!/bin/bash
 
+strip_remote_prefix() {
+	sed -u "s/^/"$'\e[1G'"/"
+}
+
 set -eo pipefail; while read oldrev newrev refname; do
-	/app/builder --etcd-host `+*etcduplink+` $REPO ${refname##*/}
+	/app/builder --etcd-host `+*etcduplink+` $REPO ${refname##*/} | strip_remote_prefix
 done`), 0755)
 			if err != nil {
 				return
