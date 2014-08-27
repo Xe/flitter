@@ -37,12 +37,16 @@ This program assumes it is being run in the bare repository it is building.
 	arguments, _ := docopt.Parse(usage, nil, true, "Flitter Builder 0.1", false)
 	fmt.Println(arguments)
 
-	//config := NewConfig(arguments["--etcd-prefix"].(string), arguments["--etcd-host"].(string))
+	config := NewConfig(arguments["--etcd-host"].(string))
 	user := os.Getenv("USER")
 	repo := arguments["<repo>"].(string)
 	branch := arguments["<branch>"].(string)
+	sha := arguments["<sha>"].(string)
 
-	//_ = config
+	config.User = user
+	config.Repo = repo
+	config.Branch = branch
+	config.Sha = sha
 
 	curdir, err := os.Getwd()
 
