@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/Xe/flitter/deis"
 	"github.com/coreos/go-etcd/etcd"
 )
 
@@ -12,7 +11,6 @@ type Config struct {
 	SlugbuilderImage string `etcd:"/deis/slugbuilder/image"`
 	SlugrunnerImage  string `etcd:"/deis/slugrunner/image"`
 	DockerfileShim   string `etcd:"/deis/builder/dockerfileshim"`
-	Controller       *deis.Controller
 	User             string
 	Repo             string
 	Branch           string
@@ -26,8 +24,7 @@ type Config struct {
 // the values from etcd.
 func NewConfig(uplink string) (c *Config) {
 	c = &Config{
-		etcd:       etcd.NewClient([]string{uplink}),
-		Controller: deis.NewControllerEtcd(uplink),
+		etcd: etcd.NewClient([]string{uplink}),
 	}
 
 	node, err := c.etcd.Get("/deis/slugbuilder/image", false, false)

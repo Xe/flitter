@@ -1,5 +1,5 @@
 FROM deis/init
-MAINTAINER OpDemand <info@opdemand.com>
+MAINTAINER Xena <xena@yolo-swag.com>
 
 ENV GITHOME /home/git
 ENV GITUSER git

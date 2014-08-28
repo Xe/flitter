@@ -1,4 +1,5 @@
 FROM deis/go
+MAINTAINER Xena <xena@yolo-swag.com>
 
 ADD . /go/src/github.com/Xe/flitter
 
