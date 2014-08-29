@@ -4,5 +4,5 @@ Description = Flitter
 [Service]
 ExecStartPre=-/bin/sh -c '/usr/bin/docker rm -f flitter'
 ExecStartPre=/usr/bin/docker pull flitter/flitter
-ExecStart=/usr/bin/docker run --name flitter --privileged -it -p 22:22 flitter/flitter
+ExecStart=/usr/bin/docker run --name flitter -it -p 2222:22 flitter/flitter
 ExecStop=/usr/bin/docker rm -f flitter
