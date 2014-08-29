@@ -2,7 +2,7 @@ BUILD_DIR := run
 GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD 2>/dev/null)
 GITCOMMIT := $(shell git rev-parse --short HEAD 2>/dev/null)
 PROJECT_NAME := flitter
-RELEASE_IMAGE := Xe/flitter
+RELEASE_IMAGE := flitter/flitter
 BUILD_IMAGE := $(PROJECT_NAME)-build$(if $(GIT_BRANCH),:$(GIT_BRANCH))
 DOCKER_IMAGE := $(PROJECT_NAME)$(if $(GIT_BRANCH),:$(GIT_BRANCH))
 
