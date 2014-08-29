@@ -16,5 +16,7 @@ VOLUME /var/lib/docker
 WORKDIR /app
 EXPOSE 22
 
+ENV DOCKER_HOST tcp://172.16.42.1:4243
+
 ADD . /app
 ADD runit/ /etc/service
