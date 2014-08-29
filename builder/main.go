@@ -7,16 +7,16 @@ import (
 	"bufio"
 	"io"
 	"io/ioutil"
+	"log"
 	"os"
 	"os/exec"
-	"strings"
 
 	"github.com/Xe/flitter/builder/output"
 	"github.com/docopt/docopt-go"
 )
 
 func main() {
-	usage := `Flitter Heroku-ish Slug Builder
+	usage := `Flitter Image Builder
 
 Usage:
   builder [options] <repo> <branch> <sha>
@@ -34,7 +34,10 @@ Options:
 This program assumes it is being run in the bare repository it is building.
 `
 
-	arguments, _ := docopt.Parse(usage, nil, true, "Flitter Builder 0.1", false)
+	arguments, err := docopt.Parse(usage, nil, true, "Flitter Builder 0.1", false)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	config := NewConfig(arguments["--etcd-host"].(string))
 	user := os.Getenv("USER")
