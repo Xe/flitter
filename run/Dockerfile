@@ -1,4 +1,4 @@
-FROM deis/init
+FROM flitter/init
 MAINTAINER Xena <xena@yolo-swag.com>
 
 ENV GITHOME /home/git

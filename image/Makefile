@@ -1,4 +1,4 @@
-NAME = deis/init
+NAME = flitter/init
 VERSION = 0.1.0
 
 .PHONY: all build test tag_latest release ssh

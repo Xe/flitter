@@ -9,7 +9,7 @@ below.
 ## Changes made
 
  - Authentication over etcd
-   - Keys go in `/deis/builder/users/$USERNAME/$FINGERPRINT` -> b64 encoded key
+   - Keys go in `/flitter/builder/users/$USERNAME/$FINGERPRINT` -> b64 encoded key
  - Only allow git pushes to be made
  - Command line flag for etcd endpoint added
  - Remove `auth-handler`

@@ -42,7 +42,7 @@ func handleAuth(conn ssh.ConnMetadata, key ssh.PublicKey) (*ssh.Permissions, err
 }
 
 func CanConnect(e *etcd.Client, sshkey string) (user string, allowed bool) {
-	reply, err := e.Get("/deis/builder/users/", true, true)
+	reply, err := e.Get("/flitter/builder/users/", true, true)
 
 	if err != nil {
 		log.Printf("etcd: %s", err)
