@@ -283,6 +283,8 @@ done`), 0755)
 
 			err = ioutil.WriteFile(reponame+"/hooks/post-receive", []byte(`#!/bin/bash
 
+export DOCKER_HOST=tcp://172.17.42.1:4243
+
 strip_remote_prefix() {
 	sed -u "s/^/"$'\e[1G'"/"
 }
