@@ -12,6 +12,7 @@ type ValidTestConfig struct {
 	DefinedBool   bool              `etcd:"/test/definedbool"`
 	UndefinedBool bool              `etcd:"/test/undefinedbool"`
 	TestMap       map[string]string `etcd:"/test/map"`
+	unused        string
 }
 
 // Test basic confguration scraping from etcd

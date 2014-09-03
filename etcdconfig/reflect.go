@@ -20,6 +20,10 @@ func Demarshal(etcd *etcd.Client, target interface{}) (err error) {
 		typeField := val.Type().Field(i)
 		tag := typeField.Tag
 
+		if tag.Get("etcd") == "" {
+			continue
+		}
+
 		switch valueField.Kind() {
 		case reflect.Bool:
 			if _, notok := etcd.Get(tag.Get("etcd"), false, false); notok == nil {
