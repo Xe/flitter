@@ -62,6 +62,17 @@ This program assumes it is being run in the bare repository it is building.
 		os.Exit(1)
 	}
 
+	defer func() {
+		output.WriteHeader("Cleanup")
+		output.WriteData("Removing temporary files")
+
+		err = os.RemoveAll(dir)
+		if err != nil {
+			output.WriteError("\n" + err.Error())
+		}
+
+	}()
+
 	// Extract branch to deploy
 	output.WriteHeader("Extracting " + repo + " to " + dir)
 
@@ -108,6 +119,7 @@ This program assumes it is being run in the bare repository it is building.
 	_, err = fout.Write(out)
 	if err != nil {
 		output.WriteHeader("Error in writing tarball: " + err.Error())
+		os.Exit(1)
 	}
 
 	fout.Sync()
@@ -197,11 +209,4 @@ ADD slug.tgz /app`))
 	// Report information about the build
 	// Print end message
 	// Do cleanup of repo and builder
-	output.WriteHeader("Cleanup")
-	output.WriteData("Removing temporary files")
-
-	err = os.RemoveAll(dir)
-	if err != nil {
-		output.WriteError("\n" + err.Error())
-	}
 }
