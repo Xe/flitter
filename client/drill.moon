@@ -1,3 +1,5 @@
+#!/usr/bin/env moon
+
 json = require "dkjson"
 http = require "socket.http"
 elfs = require "elfs"
