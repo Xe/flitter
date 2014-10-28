@@ -5,7 +5,7 @@ import "fmt"
 
 // WriteHeader writes a heroku style header.
 func WriteHeader(text interface{}) {
-	fmt.Printf("[-] %s\n", text)
+	fmt.Printf("\n[-] %s\n", text)
 }
 
 // WriteData spaces data out and writes it.
