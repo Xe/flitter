@@ -10,7 +10,7 @@ import (
 	"code.google.com/p/go-uuid/uuid"
 
 	"github.com/Xe/dockerclient"
-	"github.com/Xe/lagann/datatypes"
+	"github.com/Xe/flitter/lagann/datatypes"
 	"github.com/codegangsta/negroni"
 	"github.com/coreos/go-etcd/etcd"
 	"github.com/coreos/go-systemd/unit"

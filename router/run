@@ -1,3 +1,0 @@
-#!/bin/sh
-
-/opt/vulcan/vulcand -etcd=["http://172.17.42.1:4001"]
