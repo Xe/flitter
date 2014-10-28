@@ -1,26 +1,20 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
 	"github.com/Xe/flitter/builder/output"
-	"github.com/docopt/docopt-go"
 )
 
 func main() {
-	usage := `Cloudchaser Builder Sentry
-
-Usage:
-  cloudchaser [options] <revision> <sha>
-
-Options:
-`
-	arguments, err := docopt.Parse(usage, nil, true, "Flitter Sentry 0.1", false)
-	if err != nil {
-		log.Fatal(err)
+	if len(os.Args) != 3 {
+		log.Fatalln("Usage:\n  cloudchaser <revision> <sha>")
 	}
-	_ = arguments
+
+	revision := os.Args[1]
+	sha := os.Args[2]
 
 	output.WriteHeader("Receiver\n")
 
@@ -29,4 +23,8 @@ Options:
 	for _, val := range os.Environ() {
 		output.WriteData(val)
 	}
+
+	output.WriteHeader("Kicking off build")
+	output.WriteData(fmt.Sprintf("Revision: %s", revision))
+	output.WriteData(fmt.Sprintf("Sha: %s", sha))
 }
