@@ -13,6 +13,8 @@ import (
 	"os/exec"
 	"strings"
 
+	"code.google.com/p/go-uuid/uuid"
+
 	"github.com/Xe/flitter/builder/output"
 	"github.com/docopt/docopt-go"
 )
@@ -46,10 +48,7 @@ This program assumes it is being run in the bare repository it is building.
 	repo := arguments["<repo>"].(string)
 	branch := arguments["<branch>"].(string)
 	sha := arguments["<sha>"].(string)
-
-	curdir, err := os.Getwd()
-
-	output.WriteData("Running in " + curdir)
+	buildid := uuid.New()
 
 	output.WriteHeader("Building " + repo + " branch " + branch + " as " + user)
 
@@ -74,7 +73,7 @@ This program assumes it is being run in the bare repository it is building.
 	}()
 
 	// Extract branch to deploy
-	output.WriteHeader("Extracting " + repo + " to " + dir)
+	output.WriteHeader("Extracting " + repo)
 
 	cmd := exec.Command("git", "archive", branch)
 
@@ -124,6 +123,8 @@ This program assumes it is being run in the bare repository it is building.
 
 	fout.Sync()
 	fout.Close()
+
+	output.WriteData("done")
 
 	// Extract tarball
 	cmd = exec.Command("tar", "xf", "app.tar")
@@ -197,13 +198,20 @@ ADD slug.tgz /app`))
 	// Inject some vars
 	output.WriteHeader("Injecting flitter layers to Dockerfile")
 
-	dockerfout, err := os.OpenFile(dir+"/Dockerfile", os.O_APPEND, 0666)
+	dockerfout, err := os.OpenFile(dir+"/Dockerfile", os.O_APPEND|os.O_WRONLY, 0666)
 	if err != nil {
 		log.Fatal("Could not inject things to Dockerfile")
 	}
-	dockerfout.Write([]byte("ENV GIT_SHA \n" + sha))
-	dockerfout.Write([]byte("ENV BUILTBY \n" + os.Getenv("USER")))
-	dockerfout.Write([]byte("ENV APPNAME \n" + os.Getenv("REPO")))
+
+	_, err = dockerfout.Write([]byte("ENV GIT_SHA " + sha + "\n"))
+	if err != nil {
+		output.WriteError("Error: " + err.Error())
+		os.Exit(1)
+	}
+
+	dockerfout.Write([]byte("ENV BUILTBY " + os.Getenv("USER") + "\n"))
+	dockerfout.Write([]byte("ENV APPNAME " + os.Getenv("REPO") + "\n"))
+	dockerfout.Write([]byte("ENV BUILDID " + buildid))
 	dockerfout.Close()
 
 	output.WriteData("done")
@@ -221,6 +229,11 @@ ADD slug.tgz /app`))
 		output.WriteError(err.Error())
 		os.Exit(1)
 	}
+
+	defer func() {
+		cmd := exec.Command("docker", "rmi", image)
+		cmd.Run()
+	}()
 
 	// Tag and push to registry
 	output.WriteHeader("Pushing image to registry")
