@@ -1,0 +1,5 @@
+#!/bin/sh
+
+DOMAIN=$(etcdctl get /flitter/domain)
+
+/usr/local/bin/havok -host-ip $HOST -root-domain $DOMAIN -names 'app-(\w+)' -etcd-machines http://$HOST:4001
