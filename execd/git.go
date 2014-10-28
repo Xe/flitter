@@ -20,6 +20,8 @@ func makeGitRepo(path string) (err error) {
 		cmd.Dir = path
 		err = cmd.Run()
 
+		os.Mkdir(path+"/cache", 777)
+
 		log.Println("Created git repo at " + path)
 	}
 
