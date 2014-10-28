@@ -291,7 +291,8 @@ ADD slug.tgz /app`))
 
 	jsonstr, _ := json.Marshal(build)
 
-	resp, err := http.Post("http://192.168.56.101:3000/deploy/"+os.Getenv("REPO"), "application/json", bytes.NewBuffer(jsonstr))
+	output.WriteData("Sending build summary to lagann")
+	resp, err := http.Post("http://192.168.45.117:3000/deploy/"+os.Getenv("REPO"), "application/json", bytes.NewBuffer(jsonstr))
 	if err != nil {
 		output.WriteError("Error: " + err.Error())
 		output.WriteData("Is lagann online?")
