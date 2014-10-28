@@ -5,11 +5,13 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/Xe/flitter/builder/output"
 	"github.com/docopt/docopt-go"
@@ -126,6 +128,8 @@ This program assumes it is being run in the bare repository it is building.
 		os.Exit(1)
 	}
 
+	os.Remove(dir + "/app.tar")
+
 	// Grab config from controller
 	// Find the Dockerfile or Procfile
 	var dockerbuild bool
@@ -140,12 +144,13 @@ This program assumes it is being run in the bare repository it is building.
 		output.WriteHeader("Building Heroku procfile-based app\n")
 
 		// TODO: add environment from deis controller
-		ctidCmd := exec.Command("docker", "run", "-i", "-d", "-v", dir+":/tmp/app", "-v",
-			"/home/git"+repo+"/cache"+":/tmp/cache:rw", "deis/slugbuilder")
+		ctidCmd := exec.Command("docker", "run", "-idv", dir+":/tmp/app", "-v",
+			"/home/git/"+repo+"/cache"+":/tmp/cache:rw", "deis/slugbuilder:latest")
 
-		ctidBs, err := ctidCmd.Output()
+		ctidBs, err := ctidCmd.CombinedOutput()
 		if err != nil {
 			output.WriteError("Error in Heroku build: " + err.Error())
+			output.WriteData(fmt.Sprintf("%s", ctidBs))
 			os.Exit(1)
 		}
 
@@ -167,7 +172,10 @@ This program assumes it is being run in the bare repository it is building.
 			os.Exit(1)
 		}
 
-		_, err = fout.Write([]byte(config.DockerfileShim))
+		_, err = fout.Write([]byte(`FROM RUN mkdir -p /app
+WORKDIR /app
+ENTRYPOINT ["/runner/init"]
+ADD slug.tgz /app`))
 		if err != nil {
 			output.WriteError("Error in Heroku Dockerfile write: " + err.Error())
 		}
