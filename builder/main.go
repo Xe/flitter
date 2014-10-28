@@ -47,11 +47,6 @@ This program assumes it is being run in the bare repository it is building.
 	branch := arguments["<branch>"].(string)
 	sha := arguments["<sha>"].(string)
 
-	config.User = user
-	config.Repo = repo
-	config.Branch = branch
-	config.Sha = sha
-
 	curdir, err := os.Getwd()
 
 	output.WriteData("Running in " + curdir)
