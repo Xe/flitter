@@ -245,17 +245,42 @@ ADD slug.tgz /app`))
 	}()
 
 	// Tag and push to registry
-	output.WriteHeader("Pushing image to registry")
+	output.WriteHeader("Pushing image " + image + " to registry")
 	cmd = exec.Command("docker", "push", image)
 	err = cmd.Run()
 	if err != nil {
 		output.WriteError("Error in push: " + err.Error())
+		stderr, err := cmd.StderrPipe()
+		if err != nil {
+			output.WriteData("Cannot get debug information")
+			os.Exit(1)
+		}
+
+		spew := bufio.NewReader(stderr)
+
+		for {
+			line, _, err := spew.ReadLine()
+
+			if err == io.EOF {
+				os.Exit(1)
+			}
+
+			if err != nil {
+				output.WriteData(err)
+				os.Exit(1)
+			}
+
+			output.WriteData(string(line))
+		}
+
+		os.Exit(1)
 	}
 
 	output.WriteData("done")
 
 	// Extract process types from procfile
 	// Report information about the build
+	output.WriteHeader("Deploying")
 
 	build := &datatypes.Build{
 		App:   os.Getenv("REPO"),
@@ -269,15 +294,18 @@ ADD slug.tgz /app`))
 	resp, err := http.Post("http://192.168.56.101:3000/deploy/"+os.Getenv("REPO"), "application/json", bytes.NewBuffer(jsonstr))
 	if err != nil {
 		output.WriteError("Error: " + err.Error())
-		output.WriteData(fmt.Sprintf("Status code %d", resp.StatusCode))
-		os.Exit(1)
-	}
-
-	if resp.StatusCode != 200 {
-		output.WriteError("Error: " + resp.Status)
-		output.WriteData(fmt.Sprintf("Status code %d", resp.StatusCode))
-		os.Exit(1)
+		output.WriteData("Is lagann online?")
+		output.WriteData("Skipping deploy")
+	} else {
+		if resp.StatusCode != 200 {
+			output.WriteError("Error: " + resp.Status)
+			output.WriteData(fmt.Sprintf("Status code %d", resp.StatusCode))
+			os.Exit(1)
+		}
 	}
 
 	// Print end message
+	output.WriteHeader("Success")
+	output.WriteData("Your app is in the docker registry as " + image)
+	output.WriteData("Your build id is " + buildid)
 }
