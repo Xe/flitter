@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/Xe/flitter/etcdconfig"
+	"github.com/Xe/flitter/lib/etcdconfig"
 	"github.com/coreos/go-etcd/etcd"
 )
 
