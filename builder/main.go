@@ -209,8 +209,9 @@ ADD slug.tgz /app`))
 	output.WriteData("done")
 
 	// Build docker image
-	output.WriteHeader("Building docker image")
-	cmd = exec.Command("docker", "build", "-t", repo+":"+sha[:7], dir)
+	image := config.Registry + "/" + os.Getenv("USER") + "/" + repo + ":" + sha[:7]
+	output.WriteHeader("Building docker image " + image)
+	cmd = exec.Command("docker", "build", "-t", image, dir)
 	cmd.Dir = dir
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stdout
@@ -222,6 +223,15 @@ ADD slug.tgz /app`))
 	}
 
 	// Tag and push to registry
+	output.WriteHeader("Pushing image to registry")
+	cmd = exec.Command("docker", "push", image)
+	err = cmd.Run()
+	if err != nil {
+		output.WriteError("Error in push: " + err.Error())
+	}
+
+	output.WriteData("done")
+
 	// Extract process types from procfile
 	// Report information about the build
 	// Print end message
