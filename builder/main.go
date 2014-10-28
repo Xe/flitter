@@ -343,9 +343,11 @@ ADD slug.tgz /app`))
 			os.Exit(1)
 		}
 	}
+	output.WriteData("done")
 
 	// Print end message
 	output.WriteHeader("Success")
 	output.WriteData("Your app is in the docker registry as " + image)
 	output.WriteData("Your build id is " + buildid)
+	output.WriteData("Your application will spawn on the next available node")
 }
