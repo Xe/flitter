@@ -48,7 +48,7 @@ This program assumes it is being run in the bare repository it is building.
 	repo := arguments["<repo>"].(string)
 	branch := arguments["<branch>"].(string)
 	sha := arguments["<sha>"].(string)
-	buildid := uuid.New()
+	buildid := uuid.New()[0:8]
 
 	output.WriteHeader("Building " + repo + " branch " + branch + " as " + user)
 
