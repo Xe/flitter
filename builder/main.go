@@ -143,6 +143,8 @@ This program assumes it is being run in the bare repository it is building.
 	var dockerbuild bool
 	if _, err := os.Stat(dir + "/Dockerfile"); os.IsNotExist(err) {
 		dockerbuild = false
+		output.WriteError("Need a dockerfile to build!")
+		os.Exit(1)
 	} else {
 		dockerbuild = true
 	}
