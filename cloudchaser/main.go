@@ -16,7 +16,7 @@ func main() {
 	revision := os.Args[1]
 	sha := os.Args[2]
 
-	output.WriteHeader("Receiver\n")
+	output.WriteHeader("Receiver")
 
 	output.WriteHeader("Environment:")
 
