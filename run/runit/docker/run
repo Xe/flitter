@@ -40,7 +40,7 @@ cgroupfs_mount
 touch "$DOCKER_LOGFILE"
 chgrp docker "$DOCKER_LOGFILE"
 
-ulimit -n 1048576
-ulimit -u 1048576
+#ulimit -n 1048576
+#ulimit -u 1048576
 
 docker -d -p "$DOCKER_PIDFILE"

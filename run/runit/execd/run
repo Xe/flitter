@@ -1,5 +1,9 @@
 #!/bin/bash
 
+sv start docker || exit 1
+
+chmod 777 /var/run/docker.sock
+
 cd /home/git
 
 /app/execd -debug -etcd-node http://172.17.42.1:4001 -key /app/host_pk.pem
