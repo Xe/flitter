@@ -5,10 +5,13 @@ package main
 
 import (
 	"bufio"
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 	"os/exec"
 	"strings"
@@ -16,6 +19,7 @@ import (
 	"code.google.com/p/go-uuid/uuid"
 
 	"github.com/Xe/flitter/builder/output"
+	"github.com/Xe/lagann/datatypes"
 	"github.com/docopt/docopt-go"
 )
 
@@ -249,6 +253,28 @@ ADD slug.tgz /app`))
 
 	// Extract process types from procfile
 	// Report information about the build
+
+	build := &datatypes.Build{
+		App:   os.Getenv("REPO"),
+		ID:    buildid,
+		Image: image,
+		User:  os.Getenv("USER"),
+	}
+
+	jsonstr, _ := json.Marshal(build)
+
+	resp, err := http.Post("http://192.168.56.101:3000/deploy/"+os.Getenv("REPO"), "application/json", bytes.NewBuffer(jsonstr))
+	if err != nil {
+		output.WriteError("Error: " + err.Error())
+		output.WriteData(fmt.Sprintf("Status code %d", resp.StatusCode))
+		os.Exit(1)
+	}
+
+	if resp.StatusCode != 200 {
+		output.WriteError("Error: " + resp.Status)
+		output.WriteData(fmt.Sprintf("Status code %d", resp.StatusCode))
+		os.Exit(1)
+	}
+
 	// Print end message
-	// Do cleanup of repo and builder
 }
