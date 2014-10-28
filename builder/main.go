@@ -194,6 +194,20 @@ ADD slug.tgz /app`))
 		fout.Close()
 	}
 
+	// Inject some vars
+	output.WriteHeader("Injecting flitter layers to Dockerfile")
+
+	dockerfout, err := os.OpenFile(dir+"/Dockerfile", os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatal("Could not inject things to Dockerfile")
+	}
+	dockerfout.Write([]byte("ENV GIT_SHA \n" + sha))
+	dockerfout.Write([]byte("ENV BUILTBY \n" + os.Getenv("USER")))
+	dockerfout.Write([]byte("ENV APPNAME \n" + os.Getenv("REPO")))
+	dockerfout.Close()
+
+	output.WriteData("done")
+
 	// Build docker image
 	output.WriteHeader("Building docker image")
 	cmd = exec.Command("docker", "build", "-t", repo+":"+sha[:7], dir)
