@@ -223,7 +223,7 @@ ADD slug.tgz /app`))
 	output.WriteData("done")
 
 	// Build docker image
-	image := config.RegistryHost + config.RegistryPort +
+	image := config.RegistryHost + ":" + config.RegistryPort +
 		"/" + os.Getenv("USER") + "/" + repo + ":" + sha[:7]
 	// 192.168.45.117:5000/xena/mpd:1fc8018
 
