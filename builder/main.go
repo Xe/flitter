@@ -222,6 +222,45 @@ ADD slug.tgz /app`))
 
 	output.WriteData("done")
 
+	// Validate Docker image
+	output.WriteHeader("Validating Dockerfile")
+
+	fin, err := os.Open(dir + "/Dockerfile")
+	if err != nil {
+		output.WriteError("Could not validate Dockerfile")
+		os.Exit(1)
+	}
+
+	exposed := false
+	scanner := bufio.NewReader(fin)
+	line, isPrefix, err := scanner.ReadLine()
+	for err == nil && !isPrefix {
+		s := string(line)
+
+		split := strings.Split(s, " ")
+		if len(split) == 0 {
+			continue
+		}
+
+		if strings.ToUpper(split[0]) == "EXPOSE" {
+			if exposed {
+				output.WriteData("Multiple ports exposed")
+				output.WriteData("Please make sure to only expose one port.")
+				output.WriteData("You can and will run into undefined behavior.")
+				output.WriteData("")
+				break
+			} else {
+				exposed = true
+			}
+		}
+
+		line, isPrefix, err = scanner.ReadLine()
+	}
+
+	fin.Close()
+
+	output.WriteData("done")
+
 	// Build docker image
 	image := config.RegistryHost + ":" + config.RegistryPort +
 		"/" + os.Getenv("USER") + "/" + repo + ":" + sha[:7]
