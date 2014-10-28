@@ -165,13 +165,16 @@ This program assumes it is being run in the bare repository it is building.
 
 		buildCmd := exec.Command("docker", "attach", ctid)
 		buildCmd.Stdout = os.Stdout
-		buildCmd.Stderr = os.Stdout
+		buildCmd.Stderr = os.Stderr
+		buildCmd.Stdin = strings.NewReader("exit\n")
 
 		err = buildCmd.Run()
 		if err != nil {
 			output.WriteError("Error in Heroku build (attach phase): " + err.Error())
 			os.Exit(1)
 		}
+
+		exec.Command("docker", "rm", "-f", ctid)
 
 		fout, err := os.Create(dir + "/Dockerfile")
 		if err != nil {
