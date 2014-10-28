@@ -223,7 +223,10 @@ ADD slug.tgz /app`))
 	output.WriteData("done")
 
 	// Build docker image
-	image := config.Registry + "/" + os.Getenv("USER") + "/" + repo + ":" + sha[:7]
+	image := config.RegistryHost + config.RegistryPort +
+		"/" + os.Getenv("USER") + "/" + repo + ":" + sha[:7]
+	// 192.168.45.117:5000/xena/mpd:1fc8018
+
 	output.WriteHeader("Building docker image " + image)
 	cmd = exec.Command("docker", "build", "-t", image, dir)
 	cmd.Dir = dir

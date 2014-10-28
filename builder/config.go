@@ -11,7 +11,8 @@ import (
 type Config struct {
 	etcd *etcd.Client
 
-	Registry string `etcd:"/flitter/registry"`
+	RegistryHost string `etcd:"/flitter/registry/host"`
+	RegistryPort string `etcd:"/flitter/registry/port"`
 }
 
 // NewConfig allocates and retuens a config structure for builder. It also seeds
