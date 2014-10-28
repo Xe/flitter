@@ -172,7 +172,8 @@ This program assumes it is being run in the bare repository it is building.
 			os.Exit(1)
 		}
 
-		_, err = fout.Write([]byte(`FROM RUN mkdir -p /app
+		_, err = fout.Write([]byte(`FROM deis/slugrunner:latest
+RUN mkdir -p /app
 WORKDIR /app
 ENTRYPOINT ["/runner/init"]
 ADD slug.tgz /app`))
