@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/Xe/flitter/builder/builder/output"
+	"github.com/Xe/flitter/lib/output"
 )
 
 func main() {

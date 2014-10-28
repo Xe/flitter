@@ -18,8 +18,8 @@ import (
 
 	"code.google.com/p/go-uuid/uuid"
 
-	"github.com/Xe/flitter/builder/output"
 	"github.com/Xe/flitter/lagann/datatypes"
+	"github.com/Xe/flitter/lib/output"
 	"github.com/docopt/docopt-go"
 )
 
