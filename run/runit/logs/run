@@ -1,0 +1,5 @@
+#!/bin/sh
+
+touch /tmp/foo
+
+tail -f /tmp/foo
