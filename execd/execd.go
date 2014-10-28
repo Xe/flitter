@@ -275,7 +275,7 @@ strip_remote_prefix() {
 }
 
 set -eo pipefail; while read oldrev newrev refname; do
-	/app/cloudchaser pre $newrev | strip_remote_prefix
+	/app/cloudchaser pre $newrev 2>&1 | strip_remote_prefix
 done`), 0755)
 			if err != nil {
 				return
@@ -283,14 +283,12 @@ done`), 0755)
 
 			err = ioutil.WriteFile(reponame+"/hooks/post-receive", []byte(`#!/bin/bash
 
-export DOCKER_HOST=tcp://172.17.42.1:4243
-
 strip_remote_prefix() {
 	sed -u "s/^/"$'\e[1G'"/"
 }
 
 set -eo pipefail; while read oldrev newrev refname; do
-	/app/builder --etcd-host `+*etcduplink+` $REPO ${refname##*/} $newrev | strip_remote_prefix
+	/app/builder --etcd-host `+*etcduplink+` $REPO ${refname##*/} $newrev 2>&1 | strip_remote_prefix
 done`), 0755)
 			if err != nil {
 				return
