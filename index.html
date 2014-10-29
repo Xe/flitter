@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=640">
+
+    <link rel="stylesheet" href="stylesheets/core.css" media="screen">
+    <link rel="stylesheet" href="stylesheets/mobile.css" media="handheld, only screen and (max-device-width:640px)">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+
+    <script type="text/javascript" src="javascripts/modernizr.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="javascripts/headsmart.min.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function () {
+        $('#main_content').headsmart()
+      })
+    </script>
+    <title>Flitter by Xe</title>
+  </head>
+
+  <body>
+    <a id="forkme_banner" href="https://github.com/Xe/flitter">View on GitHub</a>
+    <div class="shell">
+
+      <header>
+        <span class="ribbon-outer">
+          <span class="ribbon-inner">
+            <h1>Flitter</h1>
+            <h2>Minimal Docker PaaS</h2>
+          </span>
+          <span class="left-tail"></span>
+          <span class="right-tail"></span>
+        </span>
+      </header>
+
+      <section id="downloads">
+        <span class="inner">
+          <a href="https://github.com/Xe/flitter/zipball/master" class="zip"><em>download</em> .ZIP</a><a href="https://github.com/Xe/flitter/tarball/master" class="tgz"><em>download</em> .TGZ</a>
+        </span>
+      </section>
+
+
+      <span class="banner-fix"></span>
+
+
+      <section id="main_content">
+        <h1>
+<a name="flitter" class="anchor" href="#flitter"><span class="octicon octicon-link"></span></a>flitter</h1>
+
+<p><a href="https://godoc.org/github.com/Xe/flitter"><img src="https://godoc.org/github.com/Xe/flitter?status.svg" alt="GoDoc"></a> <a href="https://drone.io/github.com/Xe/flitter/latest"><img src="https://drone.io/github.com/Xe/flitter/status.png" alt="Build Status"></a></p>
+
+<p>A minimal platform-as-a-service using CoreOS, vulcand, and docker-havok.</p>
+
+<p>This project is too new for contributions to be useful. Please hold off for 
+now.</p>
+
+<p>Flitter is made up of many parts from many different authors. Where possible 
+all existing code is kept under the terms of the license it came from. Any new 
+projects inside this repository are under the highly permissive Zlib license:</p>
+
+<pre><code>Copyright (C) 2014 Sam Dodrill &lt;xena@yolo-swag.com&gt; All rights reserved.
+
+This software is provided 'as-is', without any express or implied
+warranty. In no event will the authors be held liable for any damages
+arising from the use of this software.
+
+Permission is granted to anyone to use this software for any purpose,
+including commercial applications, and to alter it and redistribute it
+freely, subject to the following restrictions:
+
+1. The origin of this software must not be misrepresented; you must not
+   claim that you wrote the original software. If you use this software
+   in a product, an acknowledgment in the product documentation would be
+   appreciated but is not required.
+
+2. Altered source versions must be plainly marked as such, and must not be
+   misrepresented as being the original software.
+
+3. This notice may not be removed or altered from any source
+   distribution.
+</code></pre>
+
+<p>If you find a program is incorrectly licensed please open a github issue so it 
+can be fixed as soon as possible. These kinds of issues are critical and will 
+be treated as such.</p>
+
+<h2>
+<a name="installing" class="anchor" href="#installing"><span class="octicon octicon-link"></span></a>Installing</h2>
+
+<p>Use <code>./deploy.sh</code>. Future tooling to automate the editing of the units for 
+custom deployments will be present in a future release.</p>
+
+<h3>
+<a name="port-forwarding" class="anchor" href="#port-forwarding"><span class="octicon octicon-link"></span></a>Port Forwarding</h3>
+
+<p>Allow ports <code>80</code>, <code>22</code>, and <code>2232</code> from any IP address.</p>
+
+<h3>
+<a name="client" class="anchor" href="#client"><span class="octicon octicon-link"></span></a>Client</h3>
+
+<p>Install the client by going into the <code>client</code> folder and running
+<code>luarocks make --local</code>. The binary <code>drill</code> will be placed in
+<code>~/.luarocks/bin</code>.</p>
+
+<h2>
+<a name="support" class="anchor" href="#support"><span class="octicon octicon-link"></span></a>Support</h2>
+
+<p>Flitter is <strong>PRE-ALPHA</strong> software. It may eat your hamster. If you use this in 
+production as is, the authors take <strong>NO</strong> fault whatsoever.</p>
+
+<hr>
+
+<p>A public project by XeServ.</p>
+      </section>
+
+      <footer>
+        <span class="ribbon-outer">
+          <span class="ribbon-inner">
+            <p>this project by <a href="https://github.com/Xe">Xe</a> can be found on <a href="https://github.com/Xe/flitter">GitHub</a></p>
+          </span>
+          <span class="left-tail"></span>
+          <span class="right-tail"></span>
+        </span>
+        <p>Generated with <a href="http://pages.github.com">GitHub Pages</a> using Merlot</p>
+        <span class="octocat"></span>
+      </footer>
+
+    </div>
+
+    
+  </body>
+</html>
