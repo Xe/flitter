@@ -1,46 +1,5 @@
 #!/bin/sh
 
-#!/bin/bash
+export STORAGE_DRIVER=${STORAGE_DRIVER:-btrfs}
 
-# modify these in /etc/default/$BASE (/etc/default/docker)
-DOCKER=/usr/bin/docker
-# This is the pid file managed by docker itself
-DOCKER_PIDFILE=/var/run/$BASE.pid
-# This is the pid file created/managed by start-stop-daemon
-DOCKER_SSD_PIDFILE=/var/run/$BASE-ssd.pid
-DOCKER_LOGFILE=/var/log/$BASE.log
-DOCKER_OPTS=
-DOCKER_DESC="Docker"
-
-cgroupfs_mount() {
-	# see also https://github.com/tianon/cgroupfs-mount/blob/master/cgroupfs-mount
-	if grep -v '^#' /etc/fstab | grep -q cgroup \
-		|| [ ! -e /proc/cgroups ] \
-		|| [ ! -d /sys/fs/cgroup ]; then
-		return
-	fi
-	if ! mountpoint -q /sys/fs/cgroup; then
-		mount -t tmpfs -o uid=0,gid=0,mode=0755 cgroup /sys/fs/cgroup
-	fi
-	(
-		cd /sys/fs/cgroup
-		for sys in $(awk '!/^#/ { if ($4 == 1) print $1 }' /proc/cgroups); do
-			mkdir -p $sys
-			if ! mountpoint -q $sys; then
-				if ! mount -n -t cgroup -o $sys cgroup $sys; then
-					rmdir $sys || true
-				fi
-			fi
-		done
-	)
-}
-
-cgroupfs_mount
-
-touch "$DOCKER_LOGFILE"
-chgrp docker "$DOCKER_LOGFILE"
-
-#ulimit -n 1048576
-#ulimit -u 1048576
-
-docker -d -p "$DOCKER_PIDFILE"
+docker -d --storage-driver=$STORAGE_DRIVER --bip=172.19.42.1/16
