@@ -22,7 +22,4 @@ _testmain.go
 *.exe
 *.test
 
-execd/execd
-builder/builder
-sketch
-cloudchaser/cloudchaser
+run/bin/*
