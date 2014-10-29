@@ -8,7 +8,7 @@ set -x
 #docker build -t flitter/init base/image
 
 # build binaries in docker
-docker build -t flitter-build:master .
+docker build --rm --no-cache --force-rm -t flitter-build:master .
 
 # get binaries out of docker
 export CTID=$(docker run -dit flitter-build:master /bin/sh)
