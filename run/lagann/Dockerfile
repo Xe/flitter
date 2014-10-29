@@ -1,6 +1,6 @@
 FROM flitter/init
 
-ADD lagann /usr/local/bin
+ADD lagann /usr/local/bin/lagann
 ADD init /etc/service/lagann/run
 
 EXPOSE 3000
