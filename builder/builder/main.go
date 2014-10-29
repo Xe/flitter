@@ -1,5 +1,5 @@
 /*
-Command builder is the flitter Heroku-ish slug builder.
+Command builder is the flitter Docker image builder.
 */
 package main
 
