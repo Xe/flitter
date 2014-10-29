@@ -1,3 +1,6 @@
+/*
+Command havok is a docker container publisher for flitter.
+*/
 package main
 
 import (
@@ -38,6 +41,7 @@ func waitForInterrupt() {
 	}
 }
 
+// init sets up the flag variables needed.
 func init() {
 	flag.StringVar(&DOCKER_URL, "docker", "unix:///var/run/docker.sock", "Docker URL")
 	flag.StringVar(&ROOT_DOMAIN, "root-domain", "local", "Root level domain")
@@ -54,6 +58,7 @@ func init() {
 	ETCD_MACHINES = strings.Split(ETCD_MACHINES_CONNECTION, ",")
 }
 
+// main is the entry point for havok.
 func main() {
 	log.Infof("Havok %s", version)
 	eng = engine.NewEngine(DOCKER_URL, ETCD_MACHINES, ROOT_DOMAIN, HOST_IP, NAME_REGEX, RATE_LIMIT, RATE_LIMIT_VARIABLE, RATE_LIMIT_BURST, CONN_LIMIT, CONN_LIMIT_VARIABLE)
