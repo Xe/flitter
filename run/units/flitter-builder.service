@@ -1,0 +1,8 @@
+[Unit]
+Description=Flitter builder
+
+[Service]
+ExecStartPre=-/bin/sh -c '/usr/bin/docker rm -f flitter-builder'
+ExecStartPre=/usr/bin/docker pull flitter/builder
+ExecStart=/usr/bin/docker run --name flitter-builder --privileged -p 2231:22 flitter/builder
+ExecStop=/usr/bin/docker rm -f flitter-builder

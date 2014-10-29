@@ -1,0 +1,10 @@
+[Unit]
+Description=Announcer for Flitter's registry
+
+[Service]
+EnvironmentFile=/etc/environment
+TimeoutStartSec=0
+ExecStart=/usr/bin/sh -c 'while true; do if docker inspect flitter-registry; then etcdctl set --ttl 120 /flitter/registry/host $COREOS_PRIVATE_IPV4; etcdctl set --ttl 120 /flitter/registry/port 5000; fi; sleep 60; done'
+
+[X-Fleet]
+MachineOf=flitter-registry
