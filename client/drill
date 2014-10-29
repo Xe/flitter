@@ -9,6 +9,8 @@ stringx.import()
 
 export STORAGE_PATH = os.getenv("HOME") .. "/.drill.json"
 
+--- httpPost takes in a url and a table to post to the url.
+--  It returns the output of http.request.
 httpPost = (url, table) ->
   data = json.encode(table)
 
@@ -27,6 +29,7 @@ doCommand = (command) -> --> string, number
 
   lines, code
 
+--- store saves the settings to a file
 store = (lagann) ->
   data = {
     :lagann
@@ -42,6 +45,7 @@ store = (lagann) ->
 
   true
 
+--- restore loads the settings from a file
 restore = ->
   ret = {}
 
