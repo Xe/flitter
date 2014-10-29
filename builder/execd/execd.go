@@ -1,6 +1,25 @@
 /*
 Command execd is a simple SSH server that allows a user to run single commands on a remote server,
-suitable for things like git deploys.
+suitable for things like git deploys. This is a fork of execd by progrium. This version
+of execd is far different.
+
+    Usage: ./execd [options] <exec-handler>
+
+      -debug=false: debug mode displays handler output
+      -env-pass=false: pass environment to handlers
+      -etcd-node="http://127.0.0.1:4001": etcd node to connect to
+      -key="": pem file of private keys (read from SSH_PRIVATE_KEYS by default)
+      -port="22": port to listen on
+
+It is not suggested you run this outside of flitter as-is unless you know what you are doing.
+
+Changes:
+
+    - Authentication over etcd
+      - Keys go in `/flitter/builder/users/$USERNAME/$FINGERPRINT` -> b64 encoded key
+    - Only allow git pushes to be made
+    - Command line flag for etcd endpoint added
+    - Remove `auth-handler`
 */
 package main
 
