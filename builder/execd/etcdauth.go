@@ -13,6 +13,10 @@ import (
 	"github.com/coreos/go-etcd/etcd"
 )
 
+// handleAuth checks authentication against etcd using CanConnect and sets the needed
+// environment variables for later parts of the builder to use. It takes in the SSH
+// connection metadata, the public key of the user, and returns the SSH
+// permissions of the connection and an error if they are not authorized.
 func handleAuth(conn ssh.ConnMetadata, key ssh.PublicKey) (*ssh.Permissions, error) {
 	if conn.User() != "git" {
 		return nil, ErrUnauthorized
@@ -41,6 +45,10 @@ func handleAuth(conn ssh.ConnMetadata, key ssh.PublicKey) (*ssh.Permissions, err
 	return nil, ErrUnauthorized
 }
 
+// CanConnect checks a given SSH key against the list of authorized users in etcd
+// to check if a user with a given key is allowed to connect. It takes in an active
+// etcd.Client struct pointer and the ssh key to test and returns a username
+// and boolean representing if they are allowed to connect.
 func CanConnect(e *etcd.Client, sshkey string) (user string, allowed bool) {
 	reply, err := e.Get("/flitter/builder/users/", true, true)
 
@@ -67,6 +75,8 @@ func CanConnect(e *etcd.Client, sshkey string) (user string, allowed bool) {
 	return
 }
 
+// getFingerprint takes an SSH key in and returns the fingerprint (an MD5 sum)
+// and adds the needed colons to it.
 func getFingerprint(key string) string {
 	key = strings.Split(key, " ")[1]
 	h := md5.New()
@@ -80,6 +90,14 @@ func getFingerprint(key string) string {
 	return addColons(fmt.Sprintf("%x", h.Sum(nil)))
 }
 
+// addColons adds colons every second character in a string to make the formatting
+// of a public key fingerprint match the common standard:
+//
+//    dd3bb82e850406e9abffa80ac0046ed6
+//
+// becomes
+//
+//    dd:3b:b8:2e:85:04:06:e9:ab:ff:a8:0a:c0:04:6e:d6
 func addColons(s string) (r string) {
 	if len(s) == 0 {
 		return ""
