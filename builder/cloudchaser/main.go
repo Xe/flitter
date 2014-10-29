@@ -17,6 +17,7 @@ var (
 	etcdmachine = flag.String("-etcd", "http://172.17.42.1:4001", "etcd uplink")
 )
 
+// main is the entry point for cloudchaser, the build sentry.
 func main() {
 	if len(os.Args) != 3 {
 		log.Fatalln("Usage:\n  cloudchaser <revision> <sha>")
