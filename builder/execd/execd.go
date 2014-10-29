@@ -43,11 +43,13 @@ import (
 	"github.com/flynn/go-shlex"
 )
 
-var port = flag.String("port", "22", "port to listen on")
-var debug = flag.Bool("debug", false, "debug mode displays handler output")
-var env = flag.Bool("env-pass", false, "pass environment to handlers")
-var keys = flag.String("key", "", "pem file of private keys (read from SSH_PRIVATE_KEYS by default)")
-var etcduplink = flag.String("etcd-node", "http://127.0.0.1:4001", "etcd node to connect to")
+var (
+	port       = flag.String("port", "22", "port to listen on")
+	debug      = flag.Bool("debug", false, "debug mode displays handler output")
+	env        = flag.Bool("env-pass", false, "pass environment to handlers")
+	keys       = flag.String("key", "", "pem file of private keys (read from SSH_PRIVATE_KEYS by default)")
+	etcduplink = flag.String("etcd-node", "http://127.0.0.1:4001", "etcd node to connect to")
+)
 
 var ErrUnauthorized = errors.New("execd: user is unauthorized")
 
