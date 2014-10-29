@@ -7,6 +7,7 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -16,43 +17,35 @@ import (
 	"os/exec"
 	"strings"
 
-	"code.google.com/p/go-uuid/uuid"
-
 	"github.com/Xe/flitter/lagann/datatypes"
 	"github.com/Xe/flitter/lib/output"
-	"github.com/docopt/docopt-go"
+)
+
+var (
+	etcdhost = flag.String("etcd-host", "http://172.17.42.1:4001", "etcd url to use")
+	help     = flag.Bool("help", false, "shows this message")
 )
 
 func main() {
-	usage := `Flitter Image Builder
+	flag.Parse()
 
-Usage:
-  builder [options] <repo> <branch> <sha>
-
-Options:
-  --etcd-host=<host>     Sets the etcd url to use [default: http://172.17.42.1:4001]
-  -h,--help              Show this screen
-  -v,--verbose           Show all raw commands as they are running and
-                         all output of all commands, even ones that are
-                         normally silenced.
-  --version              Show version
-  --repository-tag=<tag> Tags built docker images with <tag> if set and
-                         does not tag them if not.
-
-This program assumes it is being run in the bare repository it is building.
-`
-
-	arguments, err := docopt.Parse(usage, nil, true, "Flitter Builder 0.1", false)
-	if err != nil {
-		log.Fatal(err)
+	if len(flag.Args()) < 3 {
+		*help = true
 	}
 
-	config := NewConfig(arguments["--etcd-host"].(string))
+	if *help {
+		fmt.Printf("Usage:\n")
+		fmt.Printf("  builder [options] <repo> <branch> <sha>\n\n")
+		flag.Usage()
+		os.Exit(128)
+	}
+
+	config := NewConfig(*etcdhost)
 	user := os.Getenv("USER")
-	repo := arguments["<repo>"].(string)
-	branch := arguments["<branch>"].(string)
-	sha := arguments["<sha>"].(string)
-	buildid := uuid.New()[0:8]
+	repo := flag.Arg(0)
+	branch := flag.Arg(1)
+	sha := flag.Arg(2)
+	buildid := sha[0:8]
 
 	output.WriteHeader("Building " + repo + " branch " + branch + " as " + user)
 
