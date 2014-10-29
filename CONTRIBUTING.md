@@ -17,6 +17,7 @@ All functions, public and private must be documented.
 ```go
 // Command foobang processes the frozboz into flapnars for Flitter's asdf to
 // function.
+package main
 
 import (
     "fmt"
