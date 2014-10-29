@@ -29,8 +29,11 @@ cp bin/havok       havok
 # lagann
 cp bin/lagann      lagann
 
+# proxy
+cp bin/proxy       proxy
+
 # build active images
-for comp in builder havok lagann
+for comp in builder havok lagann proxy
 do
 	docker build -t flitter/$comp:master $comp
 done
@@ -41,3 +44,4 @@ rm builder/cloudchaser
 rm builder/execd
 rm havok/havok
 rm lagann/lagann
+rm proxy/proxy

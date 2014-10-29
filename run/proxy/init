@@ -1,0 +1,7 @@
+#!/bin/sh
+
+export PORT=${PORT:-2232}
+export BUILDER_HOST=$(etcdctl --peers http://$HOST:4001 get /flitter/builder/host)
+export BUILDER_PORT=$(etcdctl --peers http://$HOST:4001 get /flitter/builder/port)
+
+/usr/local/bin/proxy -l :$PORT -r $BUILDER_HOST:$BUILDER_PORT
