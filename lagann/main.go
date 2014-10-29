@@ -17,6 +17,7 @@ import (
 	"gopkg.in/unrolled/render.v1"
 )
 
+// main is the entry point for lagann
 func main() {
 	r := render.New(render.Options{})
 	mux := routes.New()
@@ -194,6 +195,8 @@ func main() {
 	n.Run(":3000")
 }
 
+// reply takes in a render instance, an http responsewriter, a message string, http status code
+// and additional data to return to the user. This needs a "return" call after being run.
 func reply(r *render.Render, w http.ResponseWriter, message string, code int, data ...interface{}) {
 	r.JSON(w, code, map[string]interface{}{
 		"message": message,
