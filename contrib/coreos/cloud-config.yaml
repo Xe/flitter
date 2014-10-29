@@ -4,14 +4,16 @@ coreos:
   etcd:
     # generate a new token for each unique cluster from https://discovery.etcd.io/new
     #discovery: https://discovery.etcd.io/c7a58e4df4623e4f9166e88ada333e11
-    # multi-region and multi-cloud deployments need to use $public_ipv4
     addr: $private_ipv4:4001
     peer-addr: $private_ipv4:7001
+
   units:
     - name: etcd.service
       command: start
+
     - name: fleet.service
       command: start
+
     - name: docker-tcp.socket
       command: start
       content: |
@@ -27,3 +29,5 @@ coreos:
         WantedBy=sockets.target
 
 hostname: flitter-changeme
+
+# vim: ft=yaml setl et ts=2 sw=2
