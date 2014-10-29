@@ -8,7 +8,7 @@ import (
 	"syscall"
 
 	"github.com/Sirupsen/logrus"
-	"github.com/Xe/docker-havok/engine"
+	"github.com/Xe/flitter/havok/engine"
 )
 
 var (
