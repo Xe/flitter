@@ -38,7 +38,7 @@ func main() {
 			reply(r, w, "Invalid request: "+err.Error(), 500)
 		}
 
-		if _, err := client.Get("/flitter/builder/users/"+user.Name, false, false); err != nil {
+		if _, err := client.Get("/flitter/builder/users/"+user.Name, false, false); err == nil {
 			reply(r, w, "User "+user.Name+" already exists", 409)
 		} else {
 			for _, key := range user.SSHKeys {
