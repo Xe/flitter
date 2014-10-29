@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/bin/sh -e
+
+umount /sys/fs/cgroup ; cgroups-mount
 
 export STORAGE_DRIVER=${STORAGE_DRIVER:-btrfs}
 
