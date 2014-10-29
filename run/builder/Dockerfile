@@ -14,5 +14,7 @@ VOLUME /var/lib/docker
 WORKDIR /app
 EXPOSE 22
 
+RUN chmod a+x /usr/bin/docker
+
 ADD . /app
 ADD runit/ /etc/service
