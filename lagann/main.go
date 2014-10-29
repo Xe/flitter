@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"code.google.com/p/go-uuid/uuid"
-
 	"github.com/Xe/dockerclient"
 	"github.com/Xe/flitter/lagann/datatypes"
 	"github.com/codegangsta/negroni"
@@ -55,18 +54,22 @@ func main() {
 		body, err := ioutil.ReadAll(req.Body)
 		if err != nil {
 			reply(r, w, "Invalid request: "+err.Error(), 500)
+			return
 		}
 		err = json.Unmarshal(body, app)
 		if err != nil {
 			reply(r, w, "Invalid request: "+err.Error(), 500)
+			return
 		}
 
 		if _, err := client.Get("/flitter/apps/"+app.Name, false, false); err == nil {
 			reply(r, w, "App "+app.Name+" already exists", 409)
+			return
 		} else {
 			out, err := json.Marshal(app.Users)
 			if err != nil {
 				reply(r, w, "Invalid request: "+err.Error(), 500)
+				return
 			}
 			client.Set("/flitter/apps/"+app.Name+"/users", string(out), 0)
 			client.Set("/flitter/apps/"+app.Name+"/name", app.Name, 0)
@@ -83,10 +86,12 @@ func main() {
 		body, err := ioutil.ReadAll(req.Body)
 		if err != nil {
 			reply(r, w, "Invalid request: "+err.Error(), 500)
+			return
 		}
 		err = json.Unmarshal(body, user)
 		if err != nil {
 			reply(r, w, "Invalid request: "+err.Error(), 500)
+			return
 		}
 
 		var allowedusers []string
@@ -95,14 +100,16 @@ func main() {
 		res, err := client.Get("/flitter/apps/"+appname+"/users", false, false)
 		rawusers := res.Node.Value
 
-		err = json.Unmarshal([]byte(rawusers), allowedusers)
+		err = json.Unmarshal([]byte(rawusers), &allowedusers)
 		if err != nil {
 			reply(r, w, "Internal json decoding reply in allowed app users parsing", 500)
+			return
 		}
 
 		for _, username := range allowedusers {
 			if strings.ToLower(username) == strings.ToLower(user.Name) {
 				reply(r, w, username+" is allowed", 200)
+				return
 			}
 		}
 
@@ -119,14 +126,17 @@ func main() {
 		body, err := ioutil.ReadAll(req.Body)
 		if err != nil {
 			reply(r, w, "Invalid request: "+err.Error(), 400)
+			return
 		}
 		err = json.Unmarshal(body, build)
 		if err != nil {
 			reply(r, w, "Invalid request: "+err.Error(), 400)
+			return
 		}
 
 		if _, err := client.Get("/flitter/apps/"+appname, false, false); err != nil {
 			reply(r, w, "No such app "+appname, 404)
+			return
 		} else {
 			// Do fleet deploy here
 
