@@ -1,5 +1,6 @@
 [Unit]
 Description=Announcer for Flitter's builder
+After=flitter-builder.service
 
 [Service]
 EnvironmentFile=/etc/environment
@@ -7,4 +8,4 @@ TimeoutStartSec=0
 ExecStart=/usr/bin/sh -c 'while true; do if docker inspect flitter-builder; then etcdctl set --ttl 120 /flitter/builder/host $COREOS_PRIVATE_IPV4 120; etcdctl set --ttl 120 /flitter/builder/port 2231; else break; fi; sleep 60; done'
 
 [X-Fleet]
-MachineOf=flitter-builder
+MachineOf=flitter-builder.service

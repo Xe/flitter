@@ -1,5 +1,6 @@
 [Unit]
 Description=Announcer for Flitter's lagann
+After=flitter-lagann.service
 
 [Service]
 EnvironmentFile=/etc/environment
@@ -7,4 +8,4 @@ TimeoutStartSec=0
 ExecStart=/usr/bin/sh -c 'while true; do if docker inspect flitter-lagann; then etcdctl set --ttl 120 /flitter/lagann/host $COREOS_PRIVATE_IPV4; etcdctl set --ttl 120 /flitter/lagann/port 3000; else break; fi; sleep 60; done'
 
 [X-Fleet]
-MachineOf=flitter-lagann
+MachineOf=flitter-lagann.service
