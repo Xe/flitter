@@ -1,0 +1,9 @@
+[Unit]
+Description=Flitter TCP proxy
+
+[Service]
+EnvironmentFile=/etc/environment
+ExecStartPre=/usr/bin/docker pull flitter/proxy
+ExecStartPre=-/usr/bin/docker rm -f flitter-lagann
+ExecStart=/bin/sh -c '/usr/bin/docker run -it --name flitter-proxy -e HOST=$COREOS_PRIVATE_IPV4 flitter/proxy'
+ExecStop=/usr/bin/docker rm -f flitter-lagann
