@@ -4,5 +4,9 @@ set -ex
 
 for file in ./drone/*
 do
-	bash $file
+	echo "entering $file"
+	if ! bash $file
+	then
+		exit 1
+	fi
 done
