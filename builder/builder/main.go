@@ -136,62 +136,10 @@ func main() {
 	os.Remove(dir + "/app.tar")
 
 	// Grab config from controller
-	// Find the Dockerfile or Procfile
-	var dockerbuild bool
+	// Find the Dockerfile
 	if _, err := os.Stat(dir + "/Dockerfile"); os.IsNotExist(err) {
-		dockerbuild = false
 		output.WriteError("Need a dockerfile to build!")
 		os.Exit(1)
-	} else {
-		dockerbuild = true
-	}
-
-	if !dockerbuild {
-		// Process through slugbuilder if needed
-		output.WriteHeader("Building Heroku procfile-based app\n")
-
-		// TODO: add environment from deis controller
-		ctidCmd := exec.Command("docker", "run", "-idv", dir+":/tmp/app", "-v",
-			"/home/git/"+repo+"/cache"+":/tmp/cache:rw", "deis/slugbuilder:latest")
-
-		ctidBs, err := ctidCmd.CombinedOutput()
-		if err != nil {
-			output.WriteError("Error in Heroku build: " + err.Error())
-			output.WriteData(fmt.Sprintf("%s", ctidBs))
-			os.Exit(1)
-		}
-
-		ctid := strings.TrimSuffix(string(ctidBs), "\n")
-
-		buildCmd := exec.Command("docker", "attach", ctid)
-		buildCmd.Stdout = os.Stdout
-		buildCmd.Stderr = os.Stderr
-		buildCmd.Stdin = strings.NewReader("exit\n")
-
-		err = buildCmd.Run()
-		if err != nil {
-			output.WriteError("Error in Heroku build (attach phase): " + err.Error())
-			os.Exit(1)
-		}
-
-		exec.Command("docker", "rm", "-f", ctid)
-
-		fout, err := os.Create(dir + "/Dockerfile")
-		if err != nil {
-			output.WriteError("Error in Heroku Dockerfile Create: " + err.Error())
-			os.Exit(1)
-		}
-
-		_, err = fout.Write([]byte(`FROM deis/slugrunner:latest
-RUN mkdir -p /app
-WORKDIR /app
-ENTRYPOINT ["/runner/init"]
-ADD slug.tgz /app`))
-		if err != nil {
-			output.WriteError("Error in Heroku Dockerfile write: " + err.Error())
-		}
-
-		fout.Close()
 	}
 
 	// Inject some vars
