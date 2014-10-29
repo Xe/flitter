@@ -75,6 +75,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	os.Exit(0)
+	output.WriteData("")
+	output.WriteData("Kicking off build")
+	output.WriteData("")
 
+	os.Exit(0)
 }
