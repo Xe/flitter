@@ -186,8 +186,9 @@ func main() {
 		if strings.ToUpper(split[0]) == "EXPOSE" {
 			if exposed {
 				output.WriteData("Multiple ports exposed")
-				output.WriteData("Please make sure to only expose one port.")
-				output.WriteData("You can and will run into undefined behavior.")
+				output.WriteData("Please make sure to only expose one port")
+				output.WriteData("You can and will run into undefined behavior")
+				output.WriteData("You have been warned")
 				output.WriteData("")
 				break
 			} else {
