@@ -26,6 +26,7 @@ var (
 	help     = flag.Bool("help", false, "shows this message")
 )
 
+// main is the entrypoint for the builder
 func main() {
 	flag.Parse()
 

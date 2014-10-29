@@ -9,6 +9,8 @@ import (
 
 var cacheLock sync.Mutex
 
+// makeGitRepo makes a git repository on the disk at a given path. It returns an error if
+// the git command fails, or nil if it doesn't.
 // Inspiration from https://github.com/flynn/flynn/blob/master/gitreceived/gitreceived.go#L305
 func makeGitRepo(path string) (err error) {
 	cacheLock.Lock()

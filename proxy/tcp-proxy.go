@@ -49,6 +49,7 @@ var colors = flag.Bool("c", false, "output ansi colors")
 var match = flag.String("match", "", "match regex (in the form 'regex')")
 var replace = flag.String("replace", "", "replace regex (in the form 'regex~replacer')")
 
+// main is the entry point for the tcp proxy
 func main() {
 	flag.Parse()
 	fmt.Printf(c("Proxying from %v to %v\n", "green"), *localAddr, *remoteAddr)
@@ -89,7 +90,7 @@ func main() {
 	}
 }
 
-//A proxy represents a pair of connections and their state
+// A proxy represents a pair of connections and their state
 type proxy struct {
 	sentBytes     uint64
 	receivedBytes uint64
@@ -102,12 +103,16 @@ type proxy struct {
 	replacer      func([]byte) []byte
 }
 
+// log logs information about a connection if the verbose flag is set.
+// it takes in arguments suitable for fmt.Sprintf.
 func (p *proxy) log(s string, args ...interface{}) {
 	if *verbose {
 		log(p.prefix+s, args...)
 	}
 }
 
+// err kills off a proxy connection. It takes in a string and the error
+// that killed off the connection.
 func (p *proxy) err(s string, err error) {
 	if p.erred {
 		return
@@ -119,6 +124,7 @@ func (p *proxy) err(s string, err error) {
 	p.erred = true
 }
 
+// start starts a TCP proxy connection.
 func (p *proxy) start() {
 	defer p.lconn.Close()
 	//connect to remote
@@ -144,6 +150,8 @@ func (p *proxy) start() {
 	p.log("Closed (%d bytes sent, %d bytes recieved)", p.sentBytes, p.receivedBytes)
 }
 
+// pipe pipes TCP data back and forth between connections. It takes in a source
+// and destination TCP connection.
 func (p *proxy) pipe(src, dst *net.TCPConn) {
 	//data direction
 	var f, h string
@@ -212,10 +220,13 @@ func c(str, style string) string {
 	return str
 }
 
+// log prints logging data. It takes in printf style arguments.
 func log(f string, args ...interface{}) {
 	fmt.Printf(c(f, "green")+"\n", args...)
 }
 
+// warn prints data that is a warning for possbile failure. It takes in printf style
+// arguments.
 func warn(f string, args ...interface{}) {
 	fmt.Printf(c(f, "red")+"\n", args...)
 }

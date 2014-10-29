@@ -53,10 +53,13 @@ var (
 
 var ErrUnauthorized = errors.New("execd: user is unauthorized")
 
+// Struct exitStatusMsg represents the exit status of a command that execd runs.
 type exitStatusMsg struct {
 	Status uint32
 }
 
+// exitStatus gets the exit status of a command and returns an exitStatusMsg and an error if
+// applicable.
 func exitStatus(err error) (exitStatusMsg, error) {
 	if err != nil {
 		if exiterr, ok := err.(*exec.ExitError); ok {
@@ -71,6 +74,9 @@ func exitStatus(err error) (exitStatusMsg, error) {
 	return exitStatusMsg{0}, nil
 }
 
+// attachCmd attaches a given exec.Cmd pointer, standard output, error and input writers and runs
+// the command with the given piping set. It returns a waitgroup representing the status of the command
+// and an error if the command fails.
 func attachCmd(cmd *exec.Cmd, stdout, stderr io.Writer, stdin io.Reader) (*sync.WaitGroup, error) {
 	var wg sync.WaitGroup
 	wg.Add(2)
@@ -109,6 +115,8 @@ func attachCmd(cmd *exec.Cmd, stdout, stderr io.Writer, stdin io.Reader) (*sync.
 	return &wg, nil
 }
 
+// addKey parses an SSH private key for execd. It takes in the SSH server configuration and the key to add.
+// It returns an error if the key is unsupported by execd.
 func addKey(conf *ssh.ServerConfig, block *pem.Block) (err error) {
 	var key interface{}
 
@@ -136,6 +144,7 @@ func addKey(conf *ssh.ServerConfig, block *pem.Block) (err error) {
 	return nil
 }
 
+// parseKeys makes SSH private key structs out of the raw input from the disk.
 func parseKeys(conf *ssh.ServerConfig, pemData []byte) error {
 	var found bool
 	for {
@@ -157,6 +166,7 @@ func parseKeys(conf *ssh.ServerConfig, pemData []byte) error {
 	}
 }
 
+// init initializes the flag.Usage function.
 func init() {
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage: %v [options] <exec-handler>\n\n", os.Args[0])
@@ -164,6 +174,7 @@ func init() {
 	}
 }
 
+// main is the entry point for execd.
 func main() {
 	flag.Parse()
 
@@ -212,6 +223,8 @@ func main() {
 	}
 }
 
+// handleConn takes in the socket connection of the user and the SSH server configuration.
+// It then routes input and output to the right places.
 func handleConn(conn net.Conn, conf *ssh.ServerConfig) {
 	defer conn.Close()
 
@@ -232,6 +245,8 @@ func handleConn(conn net.Conn, conf *ssh.ServerConfig) {
 	}
 }
 
+// handleChannel runs the needed commands on a given SSH server connection against the user
+// that opened the communication channel.
 func handleChannel(conn *ssh.ServerConn, newChan ssh.NewChannel) {
 	ch, reqs, err := newChan.Accept()
 	if err != nil {
