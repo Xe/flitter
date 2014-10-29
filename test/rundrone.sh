@@ -10,3 +10,5 @@ do
 		exit 1
 	fi
 done
+
+killall5 -9
