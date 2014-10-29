@@ -1,5 +1,4 @@
 FROM ubuntu:14.04
-MAINTAINER OpDemand <info@opdemand.com>
 
 ENV HOME /root
 RUN mkdir /build
