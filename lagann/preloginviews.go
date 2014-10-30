@@ -62,9 +62,6 @@ func register(w http.ResponseWriter, req *http.Request) {
 }
 
 func login(w http.ResponseWriter, req *http.Request) {
-	utils.Reply(r, w, "Not implemented", http.StatusNotImplemented)
-	return
-
 	if req.Method != "POST" {
 		utils.Reply(r, w, "Invalid method", http.StatusMethodNotAllowed)
 		return
