@@ -12,7 +12,7 @@ import (
 
 // root is the handler for /. It is a simple 404 page.
 func root(w http.ResponseWriter, req *http.Request) {
-	reply(r, w, "No method", http.StatusNotFound)
+	utils.Reply(r, w, "No method", http.StatusNotFound)
 }
 
 func register(w http.ResponseWriter, req *http.Request) {
@@ -44,7 +44,7 @@ func register(w http.ResponseWriter, req *http.Request) {
 		base64.StdEncoding.EncodeToString(password), 0)
 
 	if _, err := client.Get("/flitter/builder/users/"+user.Name, false, false); err == nil {
-		reply(r, w, "User "+user.Name+" already exists", 409)
+		utils.Reply(r, w, "User "+user.Name+" already exists", 409)
 	} else {
 		for _, key := range user.SSHKeys {
 			client.Set("/flitter/builder/users/"+user.Name+"/"+key.Fingerprint, key.Key, 0)
