@@ -6,6 +6,7 @@ import (
 
 	"code.google.com/p/go-uuid/uuid"
 
+	"github.com/Xe/flitter/lagann/constants"
 	"github.com/Xe/flitter/lagann/datatypes"
 	"github.com/Xe/flitter/lib/utils"
 )
@@ -40,19 +41,19 @@ func register(w http.ResponseWriter, req *http.Request) {
 		},
 	}
 
-	client.Set("/flitter/lagann/users/"+user.Name+"/password",
+	client.Set(constants.ETCD_LAGANN_USERS+user.Name+"/password",
 		base64.StdEncoding.EncodeToString(password), 0)
 
-	if _, err := client.Get("/flitter/builder/users/"+user.Name, false, false); err == nil {
+	if _, err := client.Get(constants.ETCD_LAGANN_USERS+user.Name, false, false); err == nil {
 		utils.Reply(r, w, "User "+user.Name+" already exists", 409)
 	} else {
 		for _, key := range user.SSHKeys {
-			client.Set("/flitter/builder/users/"+user.Name+"/"+key.Fingerprint, key.Key, 0)
+			client.Set(constants.ETCD_BUILDER_USERS+user.Name+"/"+key.Fingerprint, key.Key, 0)
 		}
 
 		authkey := uuid.New()
 
-		client.Set("/flitter/lagann/authkeys/"+authkey, user.Name, 0)
+		client.Set(constants.ETCD_LAGANN_AUTHKEYS+authkey, user.Name, 0)
 
 		utils.Reply(r, w, "User "+user.Name+" created.", 200, map[string]interface{}{
 			"authkey": authkey,
@@ -78,7 +79,7 @@ func login(w http.ResponseWriter, req *http.Request) {
 
 	comppw := base64.StdEncoding.EncodeToString(password)
 
-	storedpwnode, err := client.Get("/flitter/lagann/users/"+username+"/password", false, false)
+	storedpwnode, err := client.Get(constants.ETCD_LAGANN_USERS+username+"/password", false, false)
 	if err != nil {
 		utils.Reply(r, w, "No such user "+username, http.StatusNotFound)
 	}
@@ -86,7 +87,7 @@ func login(w http.ResponseWriter, req *http.Request) {
 	if storedpwnode.Node.Value == comppw {
 		authkey := uuid.New()
 
-		client.Set("/flitter/lagann/authkeys/"+authkey, username, 0)
+		client.Set(constants.ETCD_LAGANN_AUTHKEYS+authkey, username, 0)
 
 		utils.Reply(r, w, "Logged in as "+username+".", 200, map[string]interface{}{
 			"authkey": authkey,

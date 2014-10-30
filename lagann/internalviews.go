@@ -8,6 +8,7 @@ import (
 
 	"code.google.com/p/go-uuid/uuid"
 	"github.com/Xe/dockerclient"
+	"github.com/Xe/flitter/lagann/constants"
 	"github.com/Xe/flitter/lagann/datatypes"
 	"github.com/Xe/flitter/lib/utils"
 )
@@ -35,7 +36,7 @@ func canDeployApp(w http.ResponseWriter, req *http.Request) {
 	var allowedusers []string
 
 	// Get app allowed users
-	res, err := client.Get("/flitter/apps/"+appname+"/users", false, false)
+	res, err := client.Get(constants.ETCD_APPS+appname+"/users", false, false)
 	rawusers := res.Node.Value
 
 	err = json.Unmarshal([]byte(rawusers), &allowedusers)
@@ -76,7 +77,7 @@ func deployApp(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if _, err := client.Get("/flitter/apps/"+appname, false, false); err != nil {
+	if _, err := client.Get(constants.ETCD_APPS+appname, false, false); err != nil {
 		utils.Reply(r, w, "No such app "+appname, 404)
 		return
 	} else {

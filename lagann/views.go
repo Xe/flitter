@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/Xe/flitter/lagann/constants"
 	"github.com/Xe/flitter/lagann/datatypes"
 	"github.com/Xe/flitter/lib/utils"
 )
@@ -22,7 +23,7 @@ func createApp(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if _, err := client.Get("/flitter/apps/"+app.Name, false, false); err == nil {
+	if _, err := client.Get(constants.ETCD_APPS+app.Name, false, false); err == nil {
 		utils.Reply(r, w, "App "+app.Name+" already exists", 409)
 		return
 	} else {
@@ -32,8 +33,8 @@ func createApp(w http.ResponseWriter, req *http.Request) {
 			return
 		}
 
-		client.Set("/flitter/apps/"+app.Name+"/users", string(out), 0)
-		client.Set("/flitter/apps/"+app.Name+"/name", app.Name, 0)
+		client.Set(constants.ETCD_APPS+app.Name+"/users", string(out), 0)
+		client.Set(constants.ETCD_APPS+app.Name+"/name", app.Name, 0)
 
 		utils.Reply(r, w, "App "+app.Name+" created", 200)
 	}
