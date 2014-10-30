@@ -30,6 +30,7 @@ type Backender interface {
 	Stop(Actorer) error    // Arbitrarily stop a given Actorer from running
 	Start(Actorer) error   // Arbitrarily start an Actorer
 	Restart(Actorer) error // Arbitrarily restart an Actorer
+	Destroy(Actorer) error // Destroy an Actorer
 }
 
 /*
