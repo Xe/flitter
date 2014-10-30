@@ -275,7 +275,7 @@ func main() {
 
 	output.WriteData("Sending build summary to lagann")
 	resp, err := http.Post(
-		"http://"+config.LagannHost+":"+config.LagannPort+"/deploy/"+os.Getenv("REPO"), "application/json",
+		"http://"+config.LagannHost+":"+config.LagannPort+"/app/deploy/"+os.Getenv("REPO"), "application/json",
 		bytes.NewBuffer(jsonstr))
 	if err != nil {
 		output.WriteError("Error: " + err.Error())

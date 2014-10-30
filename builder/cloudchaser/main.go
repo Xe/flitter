@@ -32,7 +32,7 @@ func main() {
 	output.WriteData("user:   " + user)
 	output.WriteData("app:    " + app)
 
-	posturl := fmt.Sprintf("http://%s:%s/candeploy/%s", config.LagannHost,
+	posturl := fmt.Sprintf("http://%s:%s/app/candeploy/%s", config.LagannHost,
 		config.LagannPort, app)
 
 	userob := &datatypes.User{
