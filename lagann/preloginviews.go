@@ -41,15 +41,15 @@ func register(w http.ResponseWriter, req *http.Request) {
 		},
 	}
 
-	client.Set(constants.ETCD_LAGANN_USERS+user.Name+"/password",
-		base64.StdEncoding.EncodeToString(password), 0)
-
 	if _, err := client.Get(constants.ETCD_LAGANN_USERS+user.Name, false, false); err == nil {
 		utils.Reply(r, w, "User "+user.Name+" already exists", 409)
 	} else {
 		for _, key := range user.SSHKeys {
 			client.Set(constants.ETCD_BUILDER_USERS+user.Name+"/"+key.Fingerprint, key.Key, 0)
 		}
+
+		client.Set(constants.ETCD_LAGANN_USERS+user.Name+"/password",
+			base64.StdEncoding.EncodeToString(password), 0)
 
 		authkey := uuid.New()
 
