@@ -48,12 +48,6 @@ custom deployments will be present in a future release.
 
 Allow ports `80`, `22`, and `2232` from any IP address.
 
-### Client
-
-Install the client by going into the `client` folder and running
-`luarocks make --local`. The binary `drill` will be placed in
-`~/.luarocks/bin`.
-
 ## Support
 
 Flitter is **PRE-ALPHA** software. It may eat your hamster. If you use this in 
