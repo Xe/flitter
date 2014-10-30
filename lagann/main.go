@@ -7,7 +7,6 @@ import (
 	"github.com/Xe/flitter/lib/middlewares/auth"
 	"github.com/codegangsta/negroni"
 	"github.com/coreos/go-etcd/etcd"
-	"github.com/coreos/go-systemd/unit"
 	"github.com/drone/routes"
 	"gopkg.in/unrolled/render.v1"
 )
@@ -49,24 +48,4 @@ func main() {
 	))
 
 	n.Run(":3000")
-}
-
-func startUnit(name string, myunit []*unit.UnitOption) (err error) {
-	/*
-		outmap := map[string]interface{}{
-			"desiredState": "launched",
-			"options":      myunit,
-		}
-
-		jsonstr, _ := json.Marshal(outmap)
-		client := &http.Client{}
-		req, err := http.NewRequest("PUT", "unix:///fleet.sock/v1-alpha/units/"+name+".service",
-			bytes.NewBuffer(jsonstr))
-
-		resp, err := client.Do(req)
-
-		if resp.StatusCode != 200 {
-			err = errors.New(resp.Status)
-		}*/
-	return
 }

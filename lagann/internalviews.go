@@ -10,7 +10,6 @@ import (
 	"github.com/Xe/dockerclient"
 	"github.com/Xe/flitter/lagann/datatypes"
 	"github.com/Xe/flitter/lib/utils"
-	"github.com/coreos/go-systemd/unit"
 )
 
 // canDeployApp is mounted at /app/candeploy/:app
@@ -85,19 +84,6 @@ func deployApp(w http.ResponseWriter, req *http.Request) {
 
 		uid := uuid.New()[0:8]
 
-		unitSlice := []*unit.UnitOption{
-			{"Unit", "Description", "Flitter app " + appname + " deploy " + uid},
-			{"Service", "EnvironmentFile", "/etc/environment"},
-			{"Service", "ExecStartPre", "/usr/bin/docker pull " + build.Image},
-			{"Service", "ExecStartPre", "-/usr/bin/docker rm -f app-" + appname + "-" + build.ID + "-%i"},
-			{"Service", "ExecStart", "/bin/sh -c '/usr/bin/docker run -P --name app-" + appname + "-" + build.ID + "-%i --hostname " + appname + " -e HOST=$COREOS_PRIVATE_IPV4 " + build.Image + " '"},
-			{"Service", "ExecStop", "/usr/bin/docker rm -f app-" + appname + "-" + build.ID + "-%i"},
-		}
-
-		/*for startUnit("app-"+appname+"@"+uid, myunit) != nil {
-			log.Println("Trying to launch app-" + appname + "@" + uid + "...")
-		}*/
-
 		client, err := dockerclient.NewDockerClient("unix:///var/run/docker.sock")
 		if err != nil {
 			utils.Reply(r, w, "Can't make container", 500, err.Error())
@@ -128,6 +114,6 @@ func deployApp(w http.ResponseWriter, req *http.Request) {
 		}
 		client.StartContainer(id, &hc)
 
-		utils.Reply(r, w, "App "+appname+" deployed", 200, unitSlice)
+		utils.Reply(r, w, "App "+appname+" deployed", 200)
 	}
 }
