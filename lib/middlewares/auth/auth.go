@@ -28,12 +28,14 @@ func NewAuth(machine, path string) (*Auth, error) {
 func (a *Auth) ServeHTTP(rw http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	authkey := r.Header.Get(a.HeaderName)
 	if authkey == "" {
-		http.Error(rw, `{"code": 401, "message": "Not authorized", "data": ["Try setting `+a.HeaderName+`"]}`, http.StatusUnauthorized)
+		http.Error(rw, `{"code": 401, "message": "Not authorized", "data": ["Try setting `+a.HeaderName+`."]}`, http.StatusUnauthorized)
 	}
 
 	if user, allowed := utils.CanConnect(a.e, authkey); allowed {
 		r.Header.Set("X-Lagann-User", user)
 
 		next(rw, r)
+	} else {
+		http.Error(rw, `{"code": 401, "message": "No account found", "data": ["No registration found or user was deleted."]}`, http.StatusUnauthorized)
 	}
 }
