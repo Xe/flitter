@@ -36,7 +36,7 @@ func main() {
 	usermux.Post(constants.APP_CREATE_URL, createApp)
 	appmux.Post(constants.DEPLOY_APP_URL, deployApp)
 
-	auth, _ := auth.NewAuth("http://"+os.Getenv("HOST")+":4001", "/flitter/lagann/authkeys/")
+	auth, _ := auth.NewAuth("http://"+os.Getenv("HOST")+":4001", constants.ETCD_LAGANN_AUTHKEYS)
 
 	routing.Handle(constants.USER_MUXPATH, negroni.New(
 		auth,
