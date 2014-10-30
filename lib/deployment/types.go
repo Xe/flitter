@@ -42,12 +42,12 @@ type Actorer interface {
 	fmt.Stringer
 
 	Image() string     // Get docker image name.
-	Name() string      // Get name of Actor.
-	Tags() []string    // Get tags used by Actor.
-	Status() Status    // Get status of Actor.
-	Info() interface{} // Get information about Actor. Backend specific output.
+	Name() string      // Get name of Actorer.
+	Tags() []string    // Get tags used by Actorer.
+	Status() Status    // Get status of Actorer.
+	Info() interface{} // Get information about Actorer. Backend specific output.
 
-	Start() error   // Command Actor to start.
-	Stop() error    // Command Actor to stop.
-	Restart() error // Command Actor to stop and then start again.
+	Start() error   // Command Actorer to start.
+	Stop() error    // Command Actorer to stop.
+	Restart() error // Command Actorer to stop and then start again.
 }
