@@ -21,7 +21,7 @@ has.
 type Backender interface {
 	fmt.Stringer
 
-	Deploy(Actorer, tags []string) (actor Actorer, err error)  // Deploys a new Actorer to the Backend.
+	Deploy(Actorer) (err error)                                // Deploys a new Actorer to the Backend.
 	ListDeploys(pattern string) (deploys []Actorer, err error) // Lists all Actorers on the Backend.
 	GetActorer(pattern string) (Actorer, error)                // Get an Actorer matching a pattern
 
