@@ -34,7 +34,6 @@ func main() {
 	routing.HandleFunc(constants.LOGIN_URL, login)
 
 	usermux.Post(constants.APP_CREATE_URL, createApp)
-	appmux.Post(constants.CAN_DEPLOY_APP_URL, canDeployApp)
 	appmux.Post(constants.DEPLOY_APP_URL, deployApp)
 
 	auth, _ := auth.NewAuth("http://"+os.Getenv("HOST")+":4001", "/flitter/lagann/authkeys/")

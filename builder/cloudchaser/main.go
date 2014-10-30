@@ -1,16 +1,15 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"flag"
-	"fmt"
 	"log"
-	"net/http"
 	"os"
+	"strings"
 
-	"github.com/Xe/flitter/lagann/datatypes"
+	"github.com/Xe/flitter/lagann/constants"
 	"github.com/Xe/flitter/lib/output"
+	"github.com/coreos/go-etcd/etcd"
 )
 
 var (
@@ -23,58 +22,38 @@ func main() {
 		log.Fatalln("Usage:\n  cloudchaser <revision> <sha>")
 	}
 
-	config := NewConfig(*etcdmachine)
-
 	app := os.Getenv("REPO")
 	user := os.Getenv("USER")
+
+	client := etcd.NewClient([]string{*etcdmachine})
 
 	output.WriteHeader("Checking permission")
 	output.WriteData("user:   " + user)
 	output.WriteData("app:    " + app)
 
-	posturl := fmt.Sprintf("http://%s:%s/app/candeploy/%s", config.LagannHost,
-		config.LagannPort, app)
+	var allowedusers []string
 
-	userob := &datatypes.User{
-		Name: user,
-		SSHKeys: []*datatypes.SSHKey{
-			{
-				Comment:     "cloudchaser!",
-				Key:         os.Getenv("KEY"),
-				Fingerprint: os.Getenv("FINGERPRINT"),
-			},
-		},
-	}
+	res, err := client.Get(constants.ETCD_APPS+app+"/users", false, false)
+	rawusers := res.Node.Value
 
-	jsondata, err := json.Marshal(userob)
+	err = json.Unmarshal([]byte(rawusers), &allowedusers)
 	if err != nil {
-		output.WriteError("Json encoding error")
-		output.WriteData("Please contact support")
-		os.Exit(1)
+		output.WriteError("Internal json decoding reply in allowed app users parsing")
+		output.WriteData(err.Error())
+		return
 	}
 
-	buf := bytes.NewBuffer(jsondata)
-
-	resp, err := http.Post(posturl, "application/json", buf)
-	if err != nil {
-		output.WriteError("Error in pemissions check: " + err.Error())
-		output.WriteData("Please make sure you have the requisite permissions to")
-		output.WriteData("deploy to this app.")
-		os.Exit(1)
-	}
-
-	if resp.StatusCode != 200 {
-		output.WriteError(fmt.Sprintf("Error: %d", resp.StatusCode))
-		output.WriteData(resp.Status)
-
-		if resp.StatusCode == 404 {
-			output.WriteData("Please recreate " + app + " and try again")
-		} else {
-			output.WriteData("Please contact support")
+	for _, username := range allowedusers {
+		if strings.ToLower(username) == strings.ToLower(user) {
+			goto allowed
 		}
-
-		os.Exit(1)
 	}
+
+	output.WriteError("User is not authorized to make builds")
+	output.WriteData("I think you are " + user)
+	output.WriteData("Please check the needed permissions and try again later.")
+
+allowed:
 
 	output.WriteData("")
 	output.WriteData("Kicking off build")

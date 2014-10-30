@@ -13,48 +13,6 @@ import (
 	"github.com/Xe/flitter/lib/utils"
 )
 
-// canDeployApp is mounted at /app/candeploy/:app
-//
-// It is for Cloudchaser to establish permission to deploy. This should
-// be moved to Cloudchaser proper.
-func canDeployApp(w http.ResponseWriter, req *http.Request) {
-	params := req.URL.Query()
-	appname := params.Get(":app")
-
-	user := &datatypes.User{}
-	body, err := ioutil.ReadAll(req.Body)
-	if err != nil {
-		utils.Reply(r, w, "Invalid request: "+err.Error(), 500)
-		return
-	}
-	err = json.Unmarshal(body, user)
-	if err != nil {
-		utils.Reply(r, w, "Invalid request: "+err.Error(), 500)
-		return
-	}
-
-	var allowedusers []string
-
-	// Get app allowed users
-	res, err := client.Get(constants.ETCD_APPS+appname+"/users", false, false)
-	rawusers := res.Node.Value
-
-	err = json.Unmarshal([]byte(rawusers), &allowedusers)
-	if err != nil {
-		utils.Reply(r, w, "Internal json decoding reply in allowed app users parsing", 500)
-		return
-	}
-
-	for _, username := range allowedusers {
-		if strings.ToLower(username) == strings.ToLower(user.Name) {
-			utils.Reply(r, w, username+" is allowed", 200)
-			return
-		}
-	}
-
-	utils.Reply(r, w, "User is not authorized to make builds", 401)
-}
-
 // deployApp is mounted at /app/deploy/:app
 //
 // This call should also be moved to Cloudchaser or maybe the builder directly.
