@@ -1,8 +1,9 @@
 package datatypes
 
 type User struct {
-	Name    string    `json:"name"`
-	SSHKeys []*SSHKey `json:"sshkeys"`
+	Name     string    `json:"name"`
+	Password string    `json:"password"`
+	SSHKeys  []*SSHKey `json:"sshkeys"`
 }
 
 type SSHKey struct {
