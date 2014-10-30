@@ -23,8 +23,9 @@ type Backender interface {
 
 	Deploy(Actorer, tags []string) (actor Actorer, err error)  // Deploys a new Actorer to the Backend.
 	ListDeploys(pattern string) (deploys []Actorer, err error) // Lists all Actorers on the Backend.
-	Info() interface{}                                         // Backend-specific call for information about the backend.
 	GetActorer(pattern string) (Actorer, error)                // Get an Actorer matching a pattern
+
+	Info() interface{} // Backend-specific call for information about the backend.
 
 	Stop(Actorer) error    // Arbitrarily stop a given Actorer from running
 	Start(Actorer) error   // Arbitrarily start an Actorer
