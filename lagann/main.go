@@ -38,12 +38,12 @@ func main() {
 
 	auth, _ := auth.NewAuth("http://"+os.Getenv("HOST")+":4001", "/flitter/lagann/authkeys/")
 
-	routing.Handle("/user", negroni.New(
+	routing.Handle("/user/", negroni.New(
 		auth,
 		negroni.Wrap(usermux),
 	))
 
-	routing.Handle("/app", negroni.New(
+	routing.Handle("/app/", negroni.New(
 		negroni.Wrap(appmux),
 	))
 
