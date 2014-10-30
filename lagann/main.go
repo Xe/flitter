@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/Xe/flitter/lagann/constants"
 	"github.com/Xe/flitter/lib/middlewares/auth"
 	"github.com/codegangsta/negroni"
 	"github.com/coreos/go-etcd/etcd"
@@ -28,22 +29,22 @@ func main() {
 	n := negroni.Classic()
 	n.UseHandler(routing)
 
-	routing.HandleFunc("/", root)
-	routing.HandleFunc("/register", register)
-	routing.HandleFunc("/login", login)
+	routing.HandleFunc(constants.ROOT_MUXPATH, root)
+	routing.HandleFunc(constants.REGISTER_URL, register)
+	routing.HandleFunc(constants.LOGIN_URL, login)
 
-	usermux.Post("/user/create", createApp)
-	appmux.Post("/app/candeploy/:app", canDeployApp)
-	appmux.Post("/app/deploy/:app", deployApp)
+	usermux.Post(constants.APP_CREATE_URL, createApp)
+	appmux.Post(constants.CAN_DEPLOY_APP_URL, canDeployApp)
+	appmux.Post(constants.DEPLOY_APP_URL, deployApp)
 
 	auth, _ := auth.NewAuth("http://"+os.Getenv("HOST")+":4001", "/flitter/lagann/authkeys/")
 
-	routing.Handle("/user/", negroni.New(
+	routing.Handle(constants.USER_MUXPATH, negroni.New(
 		auth,
 		negroni.Wrap(usermux),
 	))
 
-	routing.Handle("/app/", negroni.New(
+	routing.Handle(constants.APP_MUXPATH, negroni.New(
 		negroni.Wrap(appmux),
 	))
 
