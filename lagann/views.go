@@ -27,7 +27,7 @@ func createApp(w http.ResponseWriter, req *http.Request) {
 		utils.Reply(r, w, "App "+app.Name+" already exists", 409)
 		return
 	} else {
-		out, err := json.Marshal(app.Users)
+		out, err := json.Marshal([]string{req.Header.Get("X-Lagann-User")})
 		if err != nil {
 			utils.Reply(r, w, "Invalid request: "+err.Error(), 500)
 			return
