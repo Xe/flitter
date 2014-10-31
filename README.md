@@ -61,6 +61,8 @@ production as is, the authors take **NO** fault whatsoever.
 At this stage Flitter is known to be able to do `git push` deploys to a single 
 server.
 
+[![](https://i.imgur.com/Et0muSJ.png)](https://asciinema.org/a/13457)
+
 ---
 
 A public project by XeServ.
