@@ -1,6 +1,6 @@
 [Unit]
 Description=Announcer for Flitter's %i
-After=flitter-%i
+Requires=flitter-%i.service
 
 [Service]
 TimeoutStartSec=0
