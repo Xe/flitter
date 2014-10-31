@@ -4,4 +4,4 @@ set -e
 
 source /host-environment
 
-/usr/local/bin/lagann
+/usr/local/bin/lagann -etcd-machine $COREOS_PRIVATE_IPV4
