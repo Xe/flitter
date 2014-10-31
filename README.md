@@ -44,6 +44,14 @@ be treated as such.
 Use `./deploy.sh`. Future tooling to automate the editing of the units for 
 custom deployments will be present in a future release.
 
+### Havok
+
+You must set a domain on the flitter host using:
+
+```
+etcdctl set /flitter/domain flitter.xeserv.us
+```
+
 ### Port Forwarding
 
 Allow ports `80`, `22`, and `2232` from any IP address.
