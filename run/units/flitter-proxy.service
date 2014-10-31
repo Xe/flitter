@@ -8,6 +8,8 @@ ExecStartPre=/usr/bin/docker pull flitter/proxy
 ExecStartPre=-/usr/bin/docker rm -f flitter-proxy
 ExecStart=/bin/sh -c 'source /etc/environment; /usr/bin/docker run --name flitter-proxy -p 2232:2232 -v /etc/environment:/host-environment:ro flitter/proxy'
 ExecStop=/usr/bin/docker rm -f flitter-proxy
+Restart=on-failure
+RestartSec=5
 
 [X-Fleet]
 Global=true

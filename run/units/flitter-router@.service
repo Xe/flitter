@@ -7,6 +7,8 @@ ExecStartPre=/usr/bin/docker pull mailgun/vulcand
 ExecStartPre=-/usr/bin/docker rm -f flitter-proxy
 ExecStart=/bin/sh -c 'source /etc/environment; /usr/bin/docker run -p 80:80 -p 8182:8182 --name flitter-router mailgun/vulcand /opt/vulcan/vulcand -apiInterface="0.0.0.0" -interface="0.0.0.0" -port 80 --etcd=http://$COREOS_PRIVATE_IPV4:4001'
 ExecStop=/usr/bin/docker rm -f flitter-proxy
+Restart=on-failure
+RestartSec=5
 
 [X-Fleet]
 Conflicts=flitter-router@*.service

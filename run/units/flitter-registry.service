@@ -7,3 +7,5 @@ ExecStartPre=/usr/bin/docker pull registry:latest
 ExecStartPre=-/usr/bin/docker rm -f flitter-registry
 ExecStart=/usr/bin/docker run -p 5000:5000 --name flitter-registry --hostname registry registry:latest
 ExecStop=-/usr/bin/docker rm -f flitter-registry
+Restart=on-failure
+RestartSec=5
