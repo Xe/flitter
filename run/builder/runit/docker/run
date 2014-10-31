@@ -1,7 +1,7 @@
-#!/bin/sh -e
+#!/bin/sh
 
 umount /sys/fs/cgroup ; cgroups-mount
 
 export STORAGE_DRIVER=${STORAGE_DRIVER:-btrfs}
 
-docker -d --storage-driver=$STORAGE_DRIVER --bip=172.19.42.1/16
+docker -d --storage-driver=$STORAGE_DRIVER --bip=10.19.42.1/16
