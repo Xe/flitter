@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/bin/bash
+
+set -e
 
 export PORT=${PORT:-2232}
 export BUILDER_HOST=$(etcdctl --peers http://$HOST:4001 get /flitter/builder/host)
