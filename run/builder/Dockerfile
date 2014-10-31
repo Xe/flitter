@@ -18,3 +18,5 @@ RUN chmod a+x /usr/bin/docker
 
 ADD . /app
 ADD runit/ /etc/service
+
+CMD /app/dind
