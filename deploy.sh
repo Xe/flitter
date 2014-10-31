@@ -1,21 +1,35 @@
-#!/bin/sh
+#!/bin/sh -e
 
-set -ex
+if ! etcdctl get /flitter/domain
+then
+	echo "No domain set. Please set /flitter/domain."
+	exit 1
+fi
 
 # deploy flitter
-fleetctl start ./run/units/flitter-registry.service
-fleetctl start ./run/units/flitter-announce@registry.service
+echo "Initiating the container announcer mesh"
+fleetctl start -block-attempts 30 ./run/units/flitter-havok.service
 
-fleetctl start ./run/units/flitter-lagann.service
-fleetctl start ./run/units/flitter-announce@lagann.service
+echo "Deploying the builder"
+fleetctl start -block-attempts 30 ./run/units/flitter-builder.service
+fleetctl start -block-attempts 30 ./run/units/flitter-announce@builder.service
 
-fleetctl start ./run/units/flitter-builder.service
-fleetctl start ./run/units/flitter-announce@builder.service
+echo "Wiring up the builder proxy"
+fleetctl start -block-attempts 30 ./run/units/flitter-proxy.service
 
-fleetctl start ./run/units/flitter-havok.service
+echo "Spinning up Lagann"
+fleetctl start -block-attempts 30 ./run/units/flitter-lagann.service
+fleetctl start -block-attempts 30 ./run/units/flitter-announce@lagann.service
+
+echo "Starting the docker registry"
+fleetctl start -block-attempts 30 ./run/units/flitter-registry.service
+fleetctl start -block-attempts 30 ./run/units/flitter-announce@registry.service
 
 # Routing
-fleetctl start ./run/units/flitter-router@1.service
+echo "Situating the routers"
+for n in fleetctl list-machines -no-legend | awk -F'.' '{printf $1"\n"}'
+do
+	fleetctl start -block-attempts 30 ./run/units/flitter-router@"$n".service
+done
 
-# Proxy
-fleetctl start ./run/units/flitter-proxy.service
+echo "Flitter is deployed."
