@@ -7,10 +7,8 @@ import (
 )
 
 type Config struct {
-	Controller struct {
-		URL     string `yaml:"url"`
-		AuthKey string `yaml:"authkey"`
-	} `yaml:"controller"`
+	URL     string `yaml:"url"`
+	AuthKey string `yaml:"authkey"`
 }
 
 func loadConfig(filepath string) (*Config, error) {
