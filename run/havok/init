@@ -9,4 +9,4 @@ fi
 
 source /host-environment
 
-/usr/local/bin/havok -host-ip $COREOS_PRIVATE_IPV4 -root-domain $DOMAIN -names 'app-(\w+)' -etcd-machines http://$COREOS_PRIVATE_IPV4:4001
+/usr/local/bin/havok -host-ip $COREOS_PRIVATE_IPV4 -root-domain $DOMAIN -names 'app-(\w+)|flitter-lagann' -etcd-machines http://$COREOS_PRIVATE_IPV4:4001
