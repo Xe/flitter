@@ -5,6 +5,7 @@ Description=Docker havok publisher to vulcand
 TimeoutStartSec=30m
 ExecStartPre=/usr/bin/docker pull flitter/havok
 ExecStartPre=-/usr/bin/docker rm -f flitter-havok
+ExecStartPre=/usr/bin/etcdctl get /flitter/domain
 ExecStart=/usr/bin/docker run --name flitter-havok -v /var/run/docker.sock:/var/run/docker.sock -v /etc/environment:/host-environment:ro -e HOST=$COREOS_PRIVATE_IPV4 flitter/havok
 ExecStop=/usr/bin/docker rm -f flitter-havok
 Restart=on-failure
