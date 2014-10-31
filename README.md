@@ -5,9 +5,6 @@ flitter
 
 A minimal platform-as-a-service using CoreOS, vulcand, and docker-havok.
 
-This project is too new for contributions to be useful. Please hold off for 
-now.
-
 Flitter is made up of many parts from many different authors. Where possible 
 all existing code is kept under the terms of the license it came from. Any new 
 projects inside this repository are under the highly permissive Zlib license:
@@ -48,8 +45,8 @@ custom deployments will be present in a future release.
 
 You must set a domain on the flitter host using:
 
-```
-etcdctl set /flitter/domain flitter.xeserv.us
+```console
+$ etcdctl set /flitter/domain flitter.xeserv.us # *. --> 172.17.8.101
 ```
 
 ### Port Forwarding
@@ -60,6 +57,9 @@ Allow ports `80`, `22`, and `2232` from any IP address.
 
 Flitter is **PRE-ALPHA** software. It may eat your hamster. If you use this in 
 production as is, the authors take **NO** fault whatsoever.
+
+At this stage Flitter is known to be able to do `git push` deploys to a single 
+server.
 
 ---
 
