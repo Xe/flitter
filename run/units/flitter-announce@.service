@@ -1,0 +1,10 @@
+[Unit]
+Description=Announcer for Flitter's %i
+After=flitter-%i
+
+[Service]
+TimeoutStartSec=0
+ExecStart=/usr/bin/sh -c 'source /etc/environment; while true; do if docker inspect flitter-%i; then etcdctl set --ttl 120 /flitter/%i/host $COREOS_PRIVATE_IPV4 ; etcdctl set --ttl 120 /flitter/%i/port $(docker flitter-%i | head -n1 | cut -d":" -f2) ; else break; fi; sleep 60; done'
+
+[X-Fleet]
+MachineOf=flitter-%i.service

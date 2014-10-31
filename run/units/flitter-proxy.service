@@ -1,5 +1,6 @@
 [Unit]
 Description=Flitter TCP proxy
+After=flitter-builder.service
 
 [Service]
 ExecStartPre=/usr/bin/docker pull flitter/proxy
