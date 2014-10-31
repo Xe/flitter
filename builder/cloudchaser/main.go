@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	etcdmachine = flag.String("-etcd", "http://172.17.42.1:4001", "etcd uplink")
+	etcdmachine = flag.String("-etcd-machine", "172.17.42.1", "etcd uplink ip")
 )
 
 // main is the entry point for cloudchaser, the build sentry.
@@ -25,7 +25,7 @@ func main() {
 	app := os.Getenv("REPO")
 	user := os.Getenv("USER")
 
-	client := etcd.NewClient([]string{*etcdmachine})
+	client := etcd.NewClient([]string{"http://" + *etcdmachine + ":4001"})
 
 	output.WriteHeader("Checking permission")
 	output.WriteData("user:   " + user)
@@ -34,6 +34,12 @@ func main() {
 	var allowedusers []string
 
 	res, err := client.Get(constants.ETCD_APPS+app+"/users", false, false)
+	if err != nil {
+		output.WriteError("Permissions check failed")
+		output.WriteError("Do you have permission to deploy this app?")
+		os.Exit(1)
+	}
+
 	rawusers := res.Node.Value
 
 	err = json.Unmarshal([]byte(rawusers), &allowedusers)
