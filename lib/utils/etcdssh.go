@@ -4,7 +4,6 @@ import (
 	"crypto/md5"
 	"encoding/base64"
 	"fmt"
-	"io"
 	"log"
 	"strings"
 
@@ -23,7 +22,8 @@ func CanConnect(e *etcd.Client, sshkey string) (user string, allowed bool) {
 		return "", false
 	}
 
-	fp := GetFingerprint(sshkey)
+	keybit := strings.Split(sshkey, " ")[1]
+	fp := GetFingerprint(keybit)
 
 	for _, userdir := range reply.Node.Nodes {
 		for _, fpnode := range userdir.Nodes {
@@ -44,16 +44,24 @@ func CanConnect(e *etcd.Client, sshkey string) (user string, allowed bool) {
 // getFingerprint takes an SSH key in and returns the fingerprint (an MD5 sum)
 // and adds the needed colons to it.
 func GetFingerprint(key string) string {
-	key = strings.Split(key, " ")[1]
 	h := md5.New()
 
 	data, err := base64.StdEncoding.DecodeString(key)
 	if err != nil {
-		return key
+		return "error"
 	}
 
-	io.WriteString(h, string(data))
-	return FPAddColons(fmt.Sprintf("%x", h.Sum(nil)))
+	log.Printf("key: %s", key)
+
+	h.Write(data)
+
+	ret := FPAddColons(fmt.Sprintf("%x", h.Sum(nil)))
+
+	if key == ret {
+		log.Fatal("Assertion failure")
+	}
+
+	return ret
 }
 
 // addColons adds colons every second character in a string to make the formatting

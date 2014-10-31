@@ -24,3 +24,9 @@ type Build struct {
 	Image string `json:"image"`
 	App   string `json:"app"`
 }
+
+type Reply struct {
+	Message string                   `json:"message"`
+	Code    int                      `json:"code"`
+	Data    []map[string]interface{} `json:"data"`
+}
