@@ -2,9 +2,11 @@
 
 set -e
 
+source /host-environment
+
 export PORT=${PORT:-2232}
-export BUILDER_HOST=$(etcdctl --peers http://$HOST:4001 get /flitter/builder/host)
-export BUILDER_PORT=$(etcdctl --peers http://$HOST:4001 get /flitter/builder/port)
+export BUILDER_HOST=$(etcdctl --peers http://$COREOS_PRIVATE_IPV4:4001 get /flitter/builder/host)
+export BUILDER_PORT=$(etcdctl --peers http://$COREOS_PRIVATE_IPV4:4001 get /flitter/builder/port)
 
 if [ -z "$BUILDER_HOST" ]
 then
