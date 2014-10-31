@@ -1,6 +1,6 @@
 [Unit]
 Description=Flitter TCP proxy
-After=flitter-builder.service
+Requires=flitter-builder.service
 
 [Service]
 TimeoutStartSec=30m
