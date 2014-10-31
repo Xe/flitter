@@ -7,7 +7,6 @@ import (
 	"code.google.com/p/go-uuid/uuid"
 
 	"github.com/Xe/flitter/lagann/constants"
-	"github.com/Xe/flitter/lagann/datatypes"
 	"github.com/Xe/flitter/lib/utils"
 )
 
@@ -29,35 +28,31 @@ func register(w http.ResponseWriter, req *http.Request) {
 	}
 
 	password := utils.HashPassword([]byte(req.Form.Get("password")), []byte("lagann"))
+	key := req.Form.Get("sshkey")
+	uname := req.Form.Get("username")
 
-	user := &datatypes.User{
-		Name:     req.Form.Get("username"),
-		Password: string(password),
-		SSHKeys: []*datatypes.SSHKey{
-			&datatypes.SSHKey{
-				Key:         req.Form.Get("sshkey"),
-				Fingerprint: utils.GetFingerprint(req.Form.Get("sshkey")),
-			},
-		},
+	fp := utils.GetFingerprint(key)
+
+	if fp == "error" {
+		utils.Reply(r, w, "Invalid SSH key", 401)
+		return
 	}
 
-	if _, err := client.Get(constants.ETCD_LAGANN_USERS+user.Name, false, false); err == nil {
-		utils.Reply(r, w, "User "+user.Name+" already exists", 409)
+	if _, err := client.Get(constants.ETCD_LAGANN_USERS+uname, false, false); err == nil {
+		utils.Reply(r, w, "User "+uname+" already exists", 409)
 	} else {
-		for _, key := range user.SSHKeys {
-			client.Set(constants.ETCD_BUILDER_USERS+user.Name+"/"+key.Fingerprint, key.Key, 0)
-		}
+		client.Set(constants.ETCD_BUILDER_USERS+uname+"/"+fp, key, 0)
 
-		client.Set(constants.ETCD_LAGANN_USERS+user.Name+"/password",
+		client.Set(constants.ETCD_LAGANN_USERS+uname+"/password",
 			base64.StdEncoding.EncodeToString(password), 0)
 
 		authkey := uuid.New()
 
-		client.Set(constants.ETCD_LAGANN_AUTHKEYS+authkey, user.Name, 0)
+		client.Set(constants.ETCD_LAGANN_AUTHKEYS+authkey, uname, 0)
 
-		utils.Reply(r, w, "User "+user.Name+" created.", 200, map[string]interface{}{
+		utils.Reply(r, w, "User "+uname+" created.", 200, map[string]interface{}{
 			"authkey": authkey,
-			"user":    user.Name,
+			"user":    uname,
 		})
 	}
 }
@@ -69,7 +64,7 @@ func login(w http.ResponseWriter, req *http.Request) {
 	}
 
 	err := req.ParseForm()
-	if err != nil {
+	if err != nil || req.Form.Get("password") == "" || req.Form.Get("username") == "" {
 		utils.Reply(r, w, "Could not parse form "+err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -93,6 +88,5 @@ func login(w http.ResponseWriter, req *http.Request) {
 			"authkey": authkey,
 			"user":    username,
 		})
-
 	}
 }
