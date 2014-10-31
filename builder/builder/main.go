@@ -221,11 +221,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	defer func() {
-		cmd := exec.Command("docker", "rmi", image)
-		cmd.Run()
-	}()
-
 	// Tag and push to registry
 	output.WriteHeader("Pushing image " + image + " to registry")
 	cmd = exec.Command("docker", "push", image)
