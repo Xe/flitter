@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"flag"
-	"log"
 	"os"
 	"strings"
 
@@ -18,9 +17,7 @@ var (
 
 // main is the entry point for cloudchaser, the build sentry.
 func main() {
-	if len(os.Args) != 3 {
-		log.Fatalln("Usage:\n  cloudchaser <revision> <sha>")
-	}
+	flag.Parse()
 
 	app := os.Getenv("REPO")
 	user := os.Getenv("USER")
