@@ -33,7 +33,8 @@ func main() {
 
 	var allowedusers []string
 
-	res, err := client.Get(constants.ETCD_APPS+app+"/users", false, false)
+	path := constants.ETCD_APPS + app + "/users"
+	res, err := client.Get(path, false, false)
 	if err != nil {
 		output.WriteError("Permissions check failed: " + err.Error())
 		output.WriteData("Do you have permission to deploy this app?")

@@ -48,7 +48,7 @@ var (
 	debug      = flag.Bool("debug", false, "debug mode displays handler output")
 	env        = flag.Bool("env-pass", false, "pass environment to handlers")
 	keys       = flag.String("key", "", "pem file of private keys (read from SSH_PRIVATE_KEYS by default)")
-	etcduplink = flag.String("etcd-node", "http://127.0.0.1:4001", "etcd node to connect to")
+	etcduplink = flag.String("etcd-node", "http://10.1.42.1:4001", "etcd node to connect to")
 )
 
 var ErrUnauthorized = errors.New("execd: user is unauthorized")
@@ -311,7 +311,7 @@ strip_remote_prefix() {
 }
 
 set -eo pipefail; while read oldrev newrev refname; do
-	/app/cloudchaser pre $newrev 2>&1 | strip_remote_prefix
+	/app/cloudchaser -etcd-machine `+*etcduplink+` pre $newrev 2>&1 | strip_remote_prefix
 done`), 0755)
 			if err != nil {
 				return
@@ -324,7 +324,7 @@ strip_remote_prefix() {
 }
 
 set -eo pipefail; while read oldrev newrev refname; do
-	/app/builder --etcd-host `+*etcduplink+` $REPO ${refname##*/} $newrev 2>&1 | strip_remote_prefix
+	/app/builder -etcd-host `+*etcduplink+` $REPO ${refname##*/} $newrev 2>&1 | strip_remote_prefix
 done`), 0755)
 			if err != nil {
 				return
