@@ -17,6 +17,6 @@ const (
 
 	ETCD_LAGANN_AUTHKEYS = "/flitter/lagann/authkeys/"
 	ETCD_LAGANN_USERS    = "/flitter/lagann/users/"
-	ETCD_APPS            = "/flitter/apps"
+	ETCD_APPS            = "/flitter/apps/"
 	ETCD_BUILDER_USERS   = "/flitter/builder/users/"
 )
