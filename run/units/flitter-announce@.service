@@ -4,7 +4,7 @@ Requires=flitter-%i.service
 
 [Service]
 TimeoutStartSec=0
-ExecStart=/usr/bin/sh -c 'source /etc/environment; while true; do if docker inspect flitter-%i; then etcdctl set --ttl 120 /flitter/%i/host $COREOS_PRIVATE_IPV4 ; etcdctl set --ttl 120 /flitter/%i/port $(docker flitter-%i | head -n1 | cut -d":" -f2) ; else break; fi; sleep 60; done'
+ExecStart=/usr/bin/sh -c 'source /etc/environment; while true; do if docker inspect flitter-%i; then etcdctl set --ttl 120 /flitter/%i/host $COREOS_PRIVATE_IPV4 ; etcdctl set --ttl 120 /flitter/%i/port $(docker port flitter-%i | head -n1 | cut -d":" -f2) ; else break; fi; sleep 60; done'
 Restart=on-failure
 RestartSec=5
 
