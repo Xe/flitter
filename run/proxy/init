@@ -4,4 +4,16 @@ export PORT=${PORT:-2232}
 export BUILDER_HOST=$(etcdctl --peers http://$HOST:4001 get /flitter/builder/host)
 export BUILDER_PORT=$(etcdctl --peers http://$HOST:4001 get /flitter/builder/port)
 
+if [ -z "$BUILDER_HOST" ]
+then
+	echo "Cannot find builder host"
+	killall runsvdir
+fi
+
+if [ -z "$BUILDER_PORT" ]
+then
+	echo "Cannot find builder port"
+	killall runsvdir
+fi
+
 /usr/local/bin/proxy -l :$PORT -r $BUILDER_HOST:$BUILDER_PORT

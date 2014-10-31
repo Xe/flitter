@@ -4,5 +4,5 @@ Description=Lagann
 [Service]
 ExecStartPre=/usr/bin/docker pull flitter/lagann
 ExecStartPre=-/usr/bin/docker rm -f flitter-lagann
-ExecStart=/bin/sh -c 'source /etc/environment; /usr/bin/docker run --name flitter-lagann -v /var/run/fleet.sock:/fleet.sock -v /var/run/docker.sock:/var/run/docker.sock -e HOST=$COREOS_PRIVATE_IPV4 flitter/lagann'
+ExecStart=/usr/bin/docker run --name flitter-lagann -v /var/run/fleet.sock:/fleet.sock -v /var/run/docker.sock:/var/run/docker.sock -v /etc/environment:/host-environment:ro flitter/lagann
 ExecStop=/usr/bin/docker rm -f flitter-lagann

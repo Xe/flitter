@@ -2,4 +2,11 @@
 
 DOMAIN=$(etcdctl get /flitter/domain)
 
-/usr/local/bin/havok -host-ip $HOST -root-domain $DOMAIN -names 'app-(\w+)' -etcd-machines http://$HOST:4001
+if [ -z "$DOMAIN" ]; then
+	echo "No domain set"
+	killall runsvdir
+fi
+
+source /host-environment
+
+/usr/local/bin/havok -host-ip $COREOS_PRIVATE_IPV4 -root-domain $DOMAIN -names 'app-(\w+)' -etcd-machines http://$COREOS_PRIVATE_IPV4:4001

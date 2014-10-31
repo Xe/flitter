@@ -2,10 +2,9 @@
 Description=Docker havok publisher to vulcand
 
 [Service]
-EnvironmentFile=/etc/environment
 ExecStartPre=/usr/bin/docker pull flitter/havok
 ExecStartPre=-/usr/bin/docker rm -f flitter-havok
-ExecStart=/bin/sh -c '/usr/bin/docker run --name flitter-havok -v /var/run/docker.sock:/var/run/docker.sock -e HOST=$COREOS_PRIVATE_IPV4 flitter/havok'
+ExecStart=/usr/bin/docker run --name flitter-havok -v /var/run/docker.sock:/var/run/docker.sock -v /etc/environment:/host-environment:ro -e HOST=$COREOS_PRIVATE_IPV4 flitter/havok
 ExecStop=/usr/bin/docker rm -f flitter-havok
 
 [X-Fleet]

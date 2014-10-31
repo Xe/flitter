@@ -1,3 +1,5 @@
 #!/bin/sh
 
+source /host-environment
+
 /usr/local/bin/lagann

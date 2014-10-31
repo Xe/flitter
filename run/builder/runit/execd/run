@@ -4,6 +4,8 @@ sv start docker || exit 1
 
 chmod 777 /var/run/docker.sock
 
+source /host-environment
+
 cd /home/git
 
-/app/execd -debug -etcd-node http://172.17.42.1:4001 -key /app/host_pk.pem
+/app/execd -debug -etcd-node http://$COREOS_PRIVATE_IPV4:4001 -key /app/host_pk.pem
