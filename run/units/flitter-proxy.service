@@ -3,6 +3,7 @@ Description=Flitter TCP proxy
 After=flitter-builder.service
 
 [Service]
+TimeoutStartSec=30m
 ExecStartPre=/usr/bin/docker pull flitter/proxy
 ExecStartPre=-/usr/bin/docker rm -f flitter-proxy
 ExecStart=/bin/sh -c 'source /etc/environment; /usr/bin/docker run --name flitter-proxy -p 2232:2232 -v /etc/environment:/host-environment:ro flitter/proxy'
