@@ -14,7 +14,12 @@ VOLUME /var/lib/docker
 WORKDIR /app
 EXPOSE 22
 
+ADD https://get.docker.com/builds/Linux/x86_64/docker-1.2.0 /usr/bin/docker
 RUN chmod a+x /usr/bin/docker
+
+ADD https://github.com/coreos/fleet/releases/download/v0.8.3/fleet-v0.8.3-linux-amd64.tar.gz /opt/fleet.tgz
+RUN cd /opt && tar zxf fleet.tgz && mv fleet-v0.8.3-linux-amd64 fleet
+ENV PATH $PATH:/opt/fleet
 
 ADD . /app
 ADD runit/ /etc/service

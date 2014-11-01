@@ -31,7 +31,6 @@ func main() {
 
 	routing := http.NewServeMux()
 	usermux := routes.New()
-	appmux := routes.New()
 
 	n := negroni.Classic()
 	n.UseHandler(routing)
@@ -41,17 +40,12 @@ func main() {
 	routing.HandleFunc(constants.LOGIN_URL, login)
 
 	usermux.Post(constants.APP_CREATE_URL, createApp)
-	appmux.Post(constants.DEPLOY_APP_URL, deployApp)
 
 	auth, _ := auth.NewAuth("http://"+*etcdmachine+":4001", constants.ETCD_LAGANN_AUTHKEYS)
 
 	routing.Handle(constants.USER_MUXPATH, negroni.New(
 		auth,
 		negroni.Wrap(usermux),
-	))
-
-	routing.Handle(constants.APP_MUXPATH, negroni.New(
-		negroni.Wrap(appmux),
 	))
 
 	n.Run(":3000")

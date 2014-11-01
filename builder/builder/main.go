@@ -5,20 +5,18 @@ package main
 
 import (
 	"bufio"
-	"bytes"
-	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
-	"net/http"
 	"os"
 	"os/exec"
 	"strings"
 
 	"github.com/Xe/flitter/lagann/datatypes"
 	"github.com/Xe/flitter/lib/output"
+	"github.com/coreos/go-systemd/unit"
 )
 
 var (
@@ -266,28 +264,46 @@ func main() {
 		User:  os.Getenv("USER"),
 	}
 
-	jsonstr, _ := json.Marshal(build)
+	/*
+		jsonstr, _ := json.Marshal(build)
 
-	output.WriteData("Sending build summary to lagann")
-	resp, err := http.Post(
-		"http://"+config.LagannHost+":"+config.LagannPort+"/app/deploy/"+os.Getenv("REPO"), "application/json",
-		bytes.NewBuffer(jsonstr))
-	if err != nil {
-		output.WriteError("Error: " + err.Error())
-		output.WriteData("Is lagann online?")
-		output.WriteData("Skipping deploy")
-	} else {
-		if resp.StatusCode != 200 {
-			output.WriteError("Error: " + resp.Status)
-			output.WriteData(fmt.Sprintf("Status code %d", resp.StatusCode))
-			os.Exit(1)
+		output.WriteData("Sending build summary to lagann")
+		resp, err := http.Post(
+			"http://"+config.LagannHost+":"+config.LagannPort+"/app/deploy/"+os.Getenv("REPO"), "application/json",
+			bytes.NewBuffer(jsonstr))
+		if err != nil {
+			output.WriteError("Error: " + err.Error())
+			output.WriteData("Is lagann online?")
+			output.WriteData("Skipping deploy")
+		} else {
+			if resp.StatusCode != 200 {
+				output.WriteError("Error: " + resp.Status)
+				output.WriteData(fmt.Sprintf("Status code %d", resp.StatusCode))
+				os.Exit(1)
+			}
 		}
+		output.WriteData("done")
+	*/
+
+	unitSlice := []*unit.UnitOption{
+		{"Unit", "Description", "Flitter app " + repo + " deploy " + build.ID},
+		{"Service", "EnvironmentFile", "/etc/environment"},
+		{"Service", "ExecStartPre", "/usr/bin/docker pull " + build.Image},
+		{"Service", "ExecStartPre", "-/usr/bin/docker rm -f app-" + repo + "-" + build.ID},
+		{"Service", "ExecStart", "/bin/sh -c '/usr/bin/docker run -P --name app-" + repo + "-" + build.ID + " --hostname " + repo + " -e HOST=$COREOS_PRIVATE_IPV4 " + build.Image + " '"},
+		{"Service", "ExecStop", "/usr/bin/docker rm -f app-" + repo + "-" + build.ID},
+		{"X-Fleet", "Global", "true"},
 	}
-	output.WriteData("done")
+
+	if err := startUnit("app-"+repo, buildid, unitSlice); err != nil {
+		output.WriteError("Fleet unit start failed: " + err.Error())
+		output.WriteData("Please verify that fleet is online.")
+	}
 
 	// Print end message
 	output.WriteHeader("Success")
 	output.WriteData("Your app is in the docker registry as " + image)
 	output.WriteData("Your build id is " + buildid)
-	output.WriteData("Your application will spawn on the next available node")
+	output.WriteData("")
+	output.WriteData("You may access your app at http://" + repo + "." + config.Domain + " once it spins up")
 }

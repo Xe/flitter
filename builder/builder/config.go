@@ -15,6 +15,7 @@ type Config struct {
 	RegistryPort string `etcd:"/flitter/registry/port"`
 	LagannHost   string `etcd:"/flitter/lagann/host"`
 	LagannPort   string `etcd:"/flitter/lagann/port"`
+	Domain       string `etcd:"/flitter/domain"`
 }
 
 // NewConfig allocates and retuens a config structure for builder. It also seeds
