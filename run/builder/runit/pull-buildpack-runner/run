@@ -1,7 +1,10 @@
 #!/bin/sh
 
+set -e
+
 sv start docker || exit 1
 
-docker pull centurylink/buildpack-runner
+docker pull flitter/init      # A sane base image for docker projects
+docker pull flitter/buildstep # Buildstep for procfile-based builds
 
 while true; do sleep 2; done
