@@ -3,7 +3,7 @@ flitter
 
 [![GoDoc](https://godoc.org/github.com/Xe/flitter?status.svg)](https://godoc.org/github.com/Xe/flitter) [![Build Status](https://drone.io/github.com/Xe/flitter/status.png)](https://drone.io/github.com/Xe/flitter/latest)
 
-A minimal platform-as-a-service using CoreOS, vulcand, and docker-havok.
+A minimal platform-as-a-service using CoreOS, fleet, vulcand, and docker-havok.
 
 Flitter is made up of many parts from many different authors. Where possible 
 all existing code is kept under the terms of the license it came from. Any new 
@@ -46,8 +46,12 @@ custom deployments will be present in a future release.
 You must set a domain on the flitter host using:
 
 ```console
-$ etcdctl set /flitter/domain flitter.xeserv.us # *. --> 172.17.8.101
+$ etcdctl set /flitter/domain flitter.xeserv.us
 ```
+
+If you are using Vagrant (`contrib/vagrant`) to test Flitter, you can use
+`flitter.xeserv.us` as your domain setting. Everything will be forwarded 
+properly.
 
 ### Port Forwarding
 
@@ -58,8 +62,8 @@ Allow ports `80`, `22`, and `2232` from any IP address.
 Flitter is **PRE-ALPHA** software. It may eat your hamster. If you use this in 
 production as is, the authors take **NO** fault whatsoever.
 
-At this stage Flitter is known to be able to do `git push` deploys to a single 
-server.
+At this stage Flitter is known to be able to do `git push` deploys to a cluster 
+of servers running [fleet](http://github.com/coreos/fleet).
 
 [![](https://i.imgur.com/Et0muSJ.png)](https://asciinema.org/a/13457)
 
