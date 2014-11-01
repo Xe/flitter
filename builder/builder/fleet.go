@@ -10,7 +10,7 @@ import (
 
 var unitTemplate = []*unit.UnitOption{}
 
-func startUnit(name string, myunit []*unit.UnitOption) (err error) {
+func startUnit(name, tag string, myunit []*unit.UnitOption) (err error) {
 	dir, err := ioutil.TempDir("", "flitter-builder")
 	if err != nil {
 		return err
@@ -22,13 +22,13 @@ func startUnit(name string, myunit []*unit.UnitOption) (err error) {
 		return err
 	}
 
-	err = ioutil.WriteFile(dir+"/"+name, byteslicedunit, 0666)
+	err = ioutil.WriteFile(dir+"/"+name+"@.service", byteslicedunit, 0666)
 	if err != nil {
 		return err
 	}
 
-	cmd := exec.Command("fleetctl", "--endpoint", *etcdhost, "start",
-		dir+"/"+name)
+	cmd := exec.Command("fleetctl", "-endpoint", *etcdhost, "start",
+		dir+"/"+name+"@"+tag+".service")
 
 	out, err := cmd.CombinedOutput()
 	if err != nil {
