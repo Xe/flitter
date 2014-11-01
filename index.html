@@ -36,7 +36,44 @@
 
 <p><a href="https://godoc.org/github.com/Xe/flitter"><img src="https://godoc.org/github.com/Xe/flitter?status.svg" alt="GoDoc"></a> <a href="https://drone.io/github.com/Xe/flitter/latest"><img src="https://drone.io/github.com/Xe/flitter/status.png" alt="Build Status"></a></p>
 
-<p>A minimal platform-as-a-service using CoreOS, vulcand, and docker-havok.</p>
+<p>A minimal platform-as-a-service using CoreOS, fleet, vulcand, and docker-havok.</p>
+
+<h2>
+<a name="installing" class="anchor" href="#installing"><span class="octicon octicon-link"></span></a>Installing</h2>
+
+<p>Use <code>./deploy.sh</code>. Future tooling to automate the editing of the units for 
+custom deployments will be present in a future release.</p>
+
+<h3>
+<a name="havok" class="anchor" href="#havok"><span class="octicon octicon-link"></span></a>Havok</h3>
+
+<p>You must set a domain on the flitter host using:</p>
+
+<div class="highlight highlight-console"><pre><span class="gp">$</span> etcdctl <span class="nb">set</span> /flitter/domain flitter.xeserv.us
+</pre></div>
+
+<p>If you are using Vagrant (<code>contrib/vagrant</code>) to test Flitter, you can use
+<code>flitter.xeserv.us</code> as your domain setting. Everything will be forwarded 
+properly.</p>
+
+<h3>
+<a name="port-forwarding" class="anchor" href="#port-forwarding"><span class="octicon octicon-link"></span></a>Port Forwarding</h3>
+
+<p>Allow ports <code>80</code>, <code>22</code>, and <code>2232</code> from any IP address.</p>
+
+<h2>
+<a name="support" class="anchor" href="#support"><span class="octicon octicon-link"></span></a>Support</h2>
+
+<p>Flitter is <strong>PRE-ALPHA</strong> software. It may eat your hamster. If you use this in 
+production as is, the authors take <strong>NO</strong> fault whatsoever.</p>
+
+<p>At this stage Flitter is known to be able to do <code>git push</code> deploys to a cluster 
+of servers running <a href="http://github.com/coreos/fleet">fleet</a>.</p>
+
+<p><a href="https://asciinema.org/a/13457"><img src="https://i.imgur.com/Et0muSJ.png" alt=""></a></p>
+
+<h2>
+<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h2>
 
 <p>Flitter is made up of many parts from many different authors. Where possible 
 all existing code is kept under the terms of the license it came from. Any new 
@@ -67,34 +104,6 @@ freely, subject to the following restrictions:
 <p>If you find a program is incorrectly licensed please open a github issue so it 
 can be fixed as soon as possible. These kinds of issues are critical and will 
 be treated as such.</p>
-
-<h2>
-<a name="installing" class="anchor" href="#installing"><span class="octicon octicon-link"></span></a>Installing</h2>
-
-<p>Use <code>./deploy.sh</code>. Future tooling to automate the editing of the units for 
-custom deployments will be present in a future release.</p>
-
-<h3>
-<a name="havok" class="anchor" href="#havok"><span class="octicon octicon-link"></span></a>Havok</h3>
-
-<p>You must set a domain on the flitter host using:</p>
-
-<div class="highlight highlight-console"><pre><span class="gp">$</span> etcdctl <span class="nb">set</span> /flitter/domain flitter.xeserv.us <span class="c"># *. --&gt; 172.17.8.101</span>
-</pre></div>
-
-<h3>
-<a name="port-forwarding" class="anchor" href="#port-forwarding"><span class="octicon octicon-link"></span></a>Port Forwarding</h3>
-
-<p>Allow ports <code>80</code>, <code>22</code>, and <code>2232</code> from any IP address.</p>
-
-<h2>
-<a name="support" class="anchor" href="#support"><span class="octicon octicon-link"></span></a>Support</h2>
-
-<p>Flitter is <strong>PRE-ALPHA</strong> software. It may eat your hamster. If you use this in 
-production as is, the authors take <strong>NO</strong> fault whatsoever.</p>
-
-<p>At this stage Flitter is known to be able to do <code>git push</code> deploys to a single 
-server.</p>
 
 <hr>
 
