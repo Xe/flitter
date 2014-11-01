@@ -294,7 +294,7 @@ func main() {
 		{"Service", "ExecStop", "/usr/bin/docker rm -f app-" + repo + "-" + build.ID + "-%i"},
 	}
 
-	if err := startUnit("app-"+repo, buildid, unitSlice); err == nil {
+	if err := startUnit("app-"+repo, buildid, unitSlice); err != nil {
 		output.WriteError("Fleet unit start failed: " + err.Error())
 		output.WriteData("Please verify that fleet is online.")
 	}
