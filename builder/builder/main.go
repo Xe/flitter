@@ -14,6 +14,7 @@ import (
 	"os/exec"
 	"strings"
 
+	"code.google.com/p/go-uuid/uuid"
 	"github.com/Xe/flitter/lagann/datatypes"
 	"github.com/Xe/flitter/lib/output"
 	"github.com/coreos/go-systemd/unit"
@@ -44,7 +45,7 @@ func main() {
 	repo := flag.Arg(0)
 	branch := flag.Arg(1)
 	sha := flag.Arg(2)
-	buildid := sha[0:8]
+	buildid := uuid.New()[0:7]
 
 	output.WriteHeader("Building " + repo + " branch " + branch + " as " + user)
 
@@ -270,9 +271,9 @@ func main() {
 		{"Unit", "Description", "Flitter app " + repo + " deploy " + build.ID},
 		{"Service", "TimeoutStartSec", "30m"},
 		{"Service", "ExecStartPre", "/usr/bin/docker pull " + build.Image},
-		{"Service", "ExecStartPre", "-/usr/bin/docker rm -f app-" + repo + "-" + build.ID + "-%m"},
-		{"Service", "ExecStart", "/bin/sh -c '/usr/bin/docker run -P --name app-" + repo + "-" + build.ID + " --hostname " + repo + " -e HOST=$COREOS_PRIVATE_IPV4 " + build.Image + "-%m '"},
-		{"Service", "ExecStop", "/usr/bin/docker rm -f app-" + repo + "-" + build.ID + "-%m"},
+		{"Service", "ExecStartPre", "-/usr/bin/docker rm -f app-" + repo + "-" + build.ID + "-" + sha[0:8]},
+		{"Service", "ExecStart", "/bin/sh -c '/usr/bin/docker run -P --name app-" + repo + "-" + build.ID + " --hostname " + repo + " -e HOST=$COREOS_PRIVATE_IPV4 " + build.Image + "-" + sha[0:8] + " '"},
+		{"Service", "ExecStop", "/usr/bin/docker rm -f app-" + repo + "-" + build.ID + "-" + sha[0:8]},
 		{"X-Fleet", "Global", "true"},
 	}
 
