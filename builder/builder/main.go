@@ -264,27 +264,6 @@ func main() {
 		User:  os.Getenv("USER"),
 	}
 
-	/*
-		jsonstr, _ := json.Marshal(build)
-
-		output.WriteData("Sending build summary to lagann")
-		resp, err := http.Post(
-			"http://"+config.LagannHost+":"+config.LagannPort+"/app/deploy/"+os.Getenv("REPO"), "application/json",
-			bytes.NewBuffer(jsonstr))
-		if err != nil {
-			output.WriteError("Error: " + err.Error())
-			output.WriteData("Is lagann online?")
-			output.WriteData("Skipping deploy")
-		} else {
-			if resp.StatusCode != 200 {
-				output.WriteError("Error: " + resp.Status)
-				output.WriteData(fmt.Sprintf("Status code %d", resp.StatusCode))
-				os.Exit(1)
-			}
-		}
-		output.WriteData("done")
-	*/
-
 	unitSlice := []*unit.UnitOption{
 		{"Unit", "Description", "Flitter app " + repo + " deploy " + build.ID},
 		{"Service", "EnvironmentFile", "/etc/environment"},
