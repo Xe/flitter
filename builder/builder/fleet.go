@@ -31,8 +31,8 @@ func startUnit(name, tag string, myunit []*unit.UnitOption) (err error) {
 		dir+"/"+name+"@"+tag+".service")
 
 	out, err := cmd.CombinedOutput()
+	output.WriteData(string(out))
 	if err != nil {
-		output.WriteData(string(out))
 		return err
 	}
 
