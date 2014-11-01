@@ -14,7 +14,6 @@ import (
 	"os/exec"
 	"strings"
 
-	"code.google.com/p/go-uuid/uuid"
 	"github.com/Xe/flitter/lagann/datatypes"
 	"github.com/Xe/flitter/lib/output"
 	"github.com/coreos/go-systemd/unit"
@@ -45,7 +44,7 @@ func main() {
 	repo := flag.Arg(0)
 	branch := flag.Arg(1)
 	sha := flag.Arg(2)
-	buildid := uuid.New()[0:7]
+	buildid := sha[0:8]
 
 	output.WriteHeader("Building " + repo + " branch " + branch + " as " + user)
 
