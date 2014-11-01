@@ -18,6 +18,10 @@ func startUnit(name, tag string, myunit []*unit.UnitOption) (err error) {
 		return err
 	}
 
+	defer func() {
+		os.RemoveAll(dir)
+	}()
+
 	byteslicedunitreader := unit.Serialize(myunit)
 	byteslicedunit, err := ioutil.ReadAll(byteslicedunitreader)
 	if err != nil {
