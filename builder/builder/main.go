@@ -138,6 +138,8 @@ func main() {
 	// Find the Dockerfile
 	if _, err := os.Stat(dir + "/Dockerfile"); os.IsNotExist(err) {
 		output.WriteError("Need a dockerfile to build!")
+
+		output.WriteData("See https://github.com/Xe/flitter/issues/24 for more information")
 		os.Exit(1)
 	}
 
