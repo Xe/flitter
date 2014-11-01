@@ -158,7 +158,7 @@ CMD ["/start", "web"]`), 0666)
 		log.Fatal("Could not inject things to Dockerfile")
 	}
 
-	_, err = dockerfout.Write([]byte("ENV GIT_SHA " + sha + "\n"))
+	_, err = dockerfout.Write([]byte("\nENV GIT_SHA " + sha + "\n"))
 	if err != nil {
 		output.WriteError("Error: " + err.Error())
 		os.Exit(1)
