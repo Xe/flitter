@@ -274,7 +274,6 @@ func main() {
 		{"Service", "ExecStartPre", "-/usr/bin/docker rm -f app-" + repo + "-" + build.ID + "-" + sha[0:8]},
 		{"Service", "ExecStart", "/bin/sh -c '/usr/bin/docker run -P --name app-" + repo + "-" + build.ID + " --hostname " + repo + " -e HOST=$COREOS_PRIVATE_IPV4 " + build.Image + "-" + sha[0:8] + " '"},
 		{"Service", "ExecStop", "/usr/bin/docker rm -f app-" + repo + "-" + build.ID + "-" + sha[0:8]},
-		{"X-Fleet", "Global", "true"},
 	}
 
 	if err := startUnit("app-"+repo, buildid, unitSlice); err != nil {
