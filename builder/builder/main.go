@@ -277,9 +277,9 @@ CMD ["/start", "web"]`), 0666)
 		{"Unit", "Description", "Flitter app " + repo + " deploy " + build.ID},
 		{"Service", "TimeoutStartSec", "30m"},
 		{"Service", "ExecStartPre", "/usr/bin/docker pull " + build.Image},
-		{"Service", "ExecStartPre", "-/usr/bin/docker rm -f app-" + repo + "-" + build.ID},
-		{"Service", "ExecStart", "/bin/sh -c '/usr/bin/docker run -P --name app-" + repo + "-" + build.ID + " --hostname " + repo + " -e HOST=$COREOS_PRIVATE_IPV4 " + build.Image + " '"},
-		{"Service", "ExecStop", "/usr/bin/docker rm -f app-" + repo + "-" + build.ID},
+		{"Service", "ExecStartPre", "-/usr/bin/docker rm -f app-" + repo + "-" + build.ID + "-%m"},
+		{"Service", "ExecStart", "/bin/sh -c '/usr/bin/docker run -P --name app-" + repo + "-" + build.ID + " --hostname " + repo + " -e HOST=$COREOS_PRIVATE_IPV4 " + build.Image + "-%m '"},
+		{"Service", "ExecStop", "/usr/bin/docker rm -f app-" + repo + "-" + build.ID + "-%m"},
 		{"X-Fleet", "Global", "true"},
 	}
 
