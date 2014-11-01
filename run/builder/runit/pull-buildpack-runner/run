@@ -1,0 +1,7 @@
+#!/bin/sh
+
+sv start docker || exit 1
+
+docker pull centurylink/buildpack-runner
+
+while true; do sleep 2; done
