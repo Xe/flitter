@@ -2,7 +2,9 @@ package main
 
 import (
 	"io/ioutil"
+	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/Xe/flitter/lib/output"
 	"github.com/coreos/go-systemd/unit"
@@ -27,14 +29,27 @@ func startUnit(name, tag string, myunit []*unit.UnitOption) (err error) {
 		return err
 	}
 
-	cmd := exec.Command("fleetctl", "-endpoint", *etcdhost, "start",
-		dir+"/"+name+"@"+tag+".service")
+	command := []string{"-endpoint", *etcdhost, "start",
+		dir + "/" + name + "@" + tag + ".service"}
 
-	out, err := cmd.CombinedOutput()
-	output.WriteData(string(out))
+	output.WriteData("$ fleetctl " + strings.Join(command, " "))
+	output.WriteData("Waiting for fleetctl...")
+
+	cmd := exec.Command("/opt/fleet/fleetctl", command...)
+
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err = cmd.Start()
 	if err != nil {
 		return err
 	}
+
+	err = cmd.Wait()
+	if err != nil {
+		return err
+	}
+
+	output.WriteData("done")
 
 	return err
 }
