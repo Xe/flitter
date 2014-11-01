@@ -136,9 +136,18 @@ func main() {
 
 	// Grab config from controller
 	// Find the Dockerfile
+	output.WriteHeader("Validating build is possible")
+
 	if _, err := os.Stat(dir + "/Dockerfile"); os.IsNotExist(err) {
-		output.WriteError("Need a dockerfile to build!")
-		os.Exit(1)
+		output.WriteData("Injecting default Procfile-based app Dockerfile")
+		err := ioutil.WriteFile(dir+"/Dockerfile", []byte(`FROM centurylink/buildpack-runner
+EXPOSE 80
+ENV PORT 80
+CMD ["/start", "web"]`), 0666)
+		if err != nil {
+			output.WriteError("Could not write Dockerfile: " + err.Error())
+			os.Exit(1)
+		}
 	}
 
 	// Inject some vars
