@@ -221,7 +221,7 @@ func doRegister(c *cli.Context) {
 		for {
 			password = string(gopass.GetPasswdMasked())
 			if password != "" {
-				fmt.Print("Confirm: ")
+				fmt.Print("Confirm:  ")
 				otherpass := string(gopass.GetPasswdMasked())
 				if password == otherpass {
 					break
