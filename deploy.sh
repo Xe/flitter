@@ -1,6 +1,5 @@
 #!/bin/sh -e
-
-if ! etcdctl get /flitter/domain
+if ! etcdctl ${DEPLOY_PEERS/*/--peers $DEPLOY_PEERS} get /flitter/domain
 then
 	echo "No domain set. Please set /flitter/domain."
 	exit 1
@@ -27,7 +26,8 @@ fleetctl start -block-attempts 30 ./run/units/flitter-announce@registry.service
 
 # Routing
 echo "Situating the routers"
-for n in fleetctl list-machines -no-legend | awk -F'.' '{printf $1"\n"}'
+ROUTES=$(fleetctl list-machines -no-legend | awk -F'.' '{printf $1"\n"}')
+for n in $ROUTES
 do
 	fleetctl start -block-attempts 30 ./run/units/flitter-router@"$n".service
 done
