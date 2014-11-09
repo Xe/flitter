@@ -14,22 +14,22 @@ func createApp(w http.ResponseWriter, req *http.Request) {
 	app := &datatypes.App{}
 	body, err := ioutil.ReadAll(req.Body)
 	if err != nil {
-		utils.Reply(req, w, "Invalid request: "+err.Error(), 500)
+		utils.Reply(r, w, "Invalid request: "+err.Error(), 500)
 		return
 	}
 	err = json.Unmarshal(body, app)
 	if err != nil {
-		utils.Reply(req, w, "Invalid request: "+err.Error(), 500)
+		utils.Reply(r, w, "Invalid request: "+err.Error(), 500)
 		return
 	}
 
 	if _, err := client.Get(constants.ETCD_APPS+app.Name, false, false); err == nil {
-		utils.Reply(req, w, "App "+app.Name+" already exists", 409)
+		utils.Reply(r, w, "App "+app.Name+" already exists", 409)
 		return
 	} else {
 		out, err := json.Marshal([]string{req.Header.Get("X-Lagann-User")})
 		if err != nil {
-			utils.Reply(req, w, "Invalid request: "+err.Error(), 500)
+			utils.Reply(r, w, "Invalid request: "+err.Error(), 500)
 			return
 		}
 
