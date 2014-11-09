@@ -5,11 +5,10 @@ etcd and http routing paths, but in the future it will be more.
 package constants
 
 const (
-	REGISTER_URL       = "/register"
-	LOGIN_URL          = "/login"
-	APP_CREATE_URL     = "/user/create"
-	CAN_DEPLOY_APP_URL = "/app/candeploy/:app"
-	DEPLOY_APP_URL     = "/app/deploy/:app"
+	REGISTER_URL    = "/register"
+	LOGIN_URL       = "/login"
+	APP_CREATE_URL  = "/user/create"
+	APP_SHARING_URL = "/user/share/:app/add"
 
 	ROOT_MUXPATH = "/"
 	USER_MUXPATH = "/user/"

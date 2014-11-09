@@ -40,6 +40,7 @@ func main() {
 	routing.HandleFunc(constants.LOGIN_URL, login)
 
 	usermux.Post(constants.APP_CREATE_URL, createApp)
+	usermux.Post(constants.APP_SHARING_URL, addSharing)
 
 	auth, _ := auth.NewAuth("http://"+*etcdmachine+":4001", constants.ETCD_LAGANN_AUTHKEYS)
 

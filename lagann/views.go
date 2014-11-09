@@ -36,6 +36,62 @@ func createApp(w http.ResponseWriter, req *http.Request) {
 		client.Set(constants.ETCD_APPS+app.Name+"/users", string(out), 0)
 		client.Set(constants.ETCD_APPS+app.Name+"/name", app.Name, 0)
 
-		utils.Reply(r, w, "App "+app.Name+" created", 200)
+		utils.Reply(req, w, "App "+app.Name+" created", 200)
+	}
+}
+
+func addSharing(w http.ResponseWriter, req *http.Request) {
+	user := req.Header.Get("X-Lagann-User")
+	params := req.URL.Query()
+	appname := params.Get(":app")
+
+	err := req.ParseForm()
+	if err != nil {
+		utils.Reply(req, w, "Internal json error", 500, err)
+		return
+	}
+
+	res, err := client.Get(constants.ETCD_APPS+appname+"/users", false, false)
+	if err != nil {
+		utils.Reply(req, w, "No such app "+appname, 404)
+		return
+	}
+
+	var allowedusers []string
+	rawusers := res.Node.Value
+
+	err = json.Unmarshal([]byte(rawusers), &allowedusers)
+	if err != nil {
+		utils.Reply(req, w, "Internal json error", 500, err)
+		return
+	}
+
+	for _, username := range allowedusers {
+		if strings.ToLower(username) == strings.ToLower(user.Name) {
+			goto okay
+		}
+	}
+
+	utils.Reply(req, w, "Not allowed to modify permissions for "+appname, http.StatusUnauthorized)
+	return
+
+okay:
+
+	toadd := req.Form.Get("user")
+	allowedusers = append(allowedusers, toadd)
+
+	bs, err := json.Marshal(allowedusers)
+	if err != nil {
+		utils.Reply(req, w, "Internal json error", 500, err)
+		return
+
+	}
+
+	str := string(bs)
+
+	err = client.Set(constants.ETCD_APPS+appname+"/users", str, 0)
+	if err != nil {
+		utils.Reply(req, w, "Internal etcd error", 500, err)
+		return
 	}
 }
