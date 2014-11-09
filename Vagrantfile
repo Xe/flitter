@@ -5,8 +5,7 @@ require 'fileutils'
 
 Vagrant.require_version ">= 1.6.0"
 
-CLOUD_CONFIG_PATH = File.join(File.dirname(__FILE__), "user-data")
-CONFIG = File.join(File.dirname(__FILE__), "config.rb")
+CLOUD_CONFIG_PATH = File.join(File.dirname(__FILE__), "contrib/coreos/cloud-config.yaml")
 
 # Defaults for config options defined in CONFIG
 $num_instances = 1
@@ -22,9 +21,11 @@ if ENV["NUM_INSTANCES"].to_i > 0 && ENV["NUM_INSTANCES"]
   $num_instances = ENV["NUM_INSTANCES"].to_i
 end
 
-if File.exist?(CONFIG)
-  require CONFIG
-end
+$num_instances=1
+$update_channel='alpha'
+$expose_docker_tcp=2252
+$vb_memory = 1024
+$vb_cpus = 1
 
 Vagrant.configure("2") do |config|
   config.vm.box = "coreos-%s" % $update_channel
