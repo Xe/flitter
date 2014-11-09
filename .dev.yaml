@@ -1,0 +1,6 @@
+base: xena/base                   # image to launch Docker with
+repopath: github.com/Xe/flitter   # repo path for mounting $CURDIR
+golang:   true                    # Go has a more opinionated package store
+ssh:      true                    # pass through ssh keys?
+user:     xena                    # user in the docker container
+projname: flitter                 # project name
