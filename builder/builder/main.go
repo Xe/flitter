@@ -22,6 +22,12 @@ import (
 var (
 	etcdhost = flag.String("etcd-host", "http://172.17.42.1:4001", "etcd url to use")
 	help     = flag.Bool("help", false, "shows this message")
+	config   *Config
+	user     string
+	repo     string
+	branch   string
+	sha      string
+	buildid  string
 )
 
 // main is the entrypoint for the builder
@@ -39,12 +45,12 @@ func main() {
 		os.Exit(128)
 	}
 
-	config := NewConfig(*etcdhost)
-	user := os.Getenv("USER")
-	repo := flag.Arg(0)
-	branch := flag.Arg(1)
-	sha := flag.Arg(2)
-	buildid := sha[0:8]
+	config = NewConfig(*etcdhost)
+	user = os.Getenv("USER")
+	repo = flag.Arg(0)
+	branch = flag.Arg(1)
+	sha = flag.Arg(2)
+	buildid = sha[0:8]
 
 	output.WriteHeader("Building " + repo + " branch " + branch + " as " + user)
 
