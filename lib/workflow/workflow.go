@@ -46,7 +46,7 @@ func (c *Context) Run() (err error) {
 	}
 
 	for _, task := range c.CleanupTasks {
-		task(c)
+		defer task(c)
 	}
 
 	return
