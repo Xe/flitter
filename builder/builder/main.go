@@ -4,19 +4,12 @@ Command builder is the flitter Docker image builder.
 package main
 
 import (
-	"bufio"
 	"flag"
 	"fmt"
-	"io"
-	"io/ioutil"
-	"log"
 	"os"
-	"os/exec"
-	"strings"
 
-	"github.com/Xe/flitter/lagann/datatypes"
 	"github.com/Xe/flitter/lib/output"
-	"github.com/coreos/go-systemd/unit"
+	"github.com/Xe/flitter/lib/workflow"
 )
 
 var (
@@ -28,6 +21,7 @@ var (
 	branch   string
 	sha      string
 	buildid  string
+	image    string
 )
 
 // main is the entrypoint for the builder
