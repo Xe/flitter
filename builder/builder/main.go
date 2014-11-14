@@ -113,8 +113,6 @@ func main() {
 
 			output.WriteData(string(line))
 		}
-
-		os.Exit(1)
 	}
 
 	_, err = fout.Write(out)
@@ -255,8 +253,6 @@ func main() {
 
 			output.WriteData(string(line))
 		}
-
-		os.Exit(1)
 	}
 
 	output.WriteData("done")
