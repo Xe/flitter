@@ -51,7 +51,8 @@ func main() {
 
 	c := workflow.New("builder")
 
-	c.Use(makeTempDir,
+	c.Use(
+		makeTempDir,
 		extractTarball,
 		checkDockerfile,
 		injectLayers,
@@ -59,7 +60,8 @@ func main() {
 		buildImage,
 		tagAndPushImage,
 		deployImage,
-		successMessage)
+		successMessage,
+	)
 
 	err := c.Run()
 	if err != nil {
