@@ -6,6 +6,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/Xe/flitter/lib/output"
@@ -63,5 +64,7 @@ func main() {
 	err := c.Run()
 	if err != nil {
 		output.WriteError(err.Error())
+
+		log.Fatal(err)
 	}
 }
