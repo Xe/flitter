@@ -2,12 +2,12 @@
 
 ## Code Style
 
-Idiomatic Go is a must. If you fail, fail loudly and with details. Avoid 
-introducing dependencies where the maintainers do not strictly follow 
-[semantic versioning](http://semver.org), and if you must please inform the 
+Idiomatic Go is a must. If you fail, fail loudly and with details. Avoid
+introducing dependencies where the maintainers do not strictly follow
+[semantic versioning](http://semver.org), and if you must please inform the
 Flitter authors so that a fork can be made.
 
-Do not introduce pull requests for supporting tools such as Goop or Godep, they 
+Do not introduce pull requests for supporting tools such as Goop or Godep, they
 will be denied. `go get`-compatible code is a must.
 
 ## Documentation
@@ -31,15 +31,25 @@ func main() {
 
 ## Branching
 
-Flitter uses [Github](http://github.com) for its version control and ticketing 
+Flitter uses [Github](http://github.com) for its version control and ticketing
 system. Take advantage of this.
 
-When branching to fix a problem, always create a branch in one of the following 
+When branching to fix a problem, always create a branch in one of the following
 formats:
 
 ```
-<component>/<dash-separated-description-of-changes>
-<component>/<subcomponent>/<dash-separated-description-of-changes>
+<action>/<component>/<dash-separated-description-of-changes>
+<action>/<component>-<subcomponent>/<dash-separated-description-of-changes>
 ```
+
+Where action is one of:
+
+| Action  | Meaning                          |
+|:------- |:-------------------------------- |
+| `feat`  | New features                     |
+| `fix`   | Fixes                            |
+| `doc`   | Documentation additions or fixes |
+| `nfo`   | Nuking from orbit                |
+| `idiom` | Idiomatic code changes           |
 
 Please do close issues via issues and commits where needed.
