@@ -48,7 +48,7 @@ func extractTarball(c *workflow.Context) (err error) {
 
 	fout, err := os.Create(dir + "/app.tar")
 	if err != nil {
-		os.Exit(1)
+		return err
 	}
 
 	cmd.Stderr = os.Stderr
@@ -60,7 +60,7 @@ func extractTarball(c *workflow.Context) (err error) {
 		stderr, err := cmd.StderrPipe()
 		if err != nil {
 			output.WriteData("Cannot get debug information")
-			os.Exit(1)
+			return err
 		}
 
 		spew := bufio.NewReader(stderr)
@@ -84,7 +84,7 @@ func extractTarball(c *workflow.Context) (err error) {
 	_, err = fout.Write(out)
 	if err != nil {
 		output.WriteHeader("Error in writing tarball: " + err.Error())
-		os.Exit(1)
+		return err
 	}
 
 	fout.Sync()
@@ -99,7 +99,7 @@ func extractTarball(c *workflow.Context) (err error) {
 	err = cmd.Run()
 	if err != nil {
 		output.WriteHeader("Error in extracting tarball: " + err.Error())
-		os.Exit(1)
+		return err
 	}
 
 	os.Remove(dir + "/app.tar")
