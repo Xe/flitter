@@ -28,10 +28,10 @@ func New(name string) (c *Context) {
 	return
 }
 
-// Use adds a HandleFunc to the workflow Context.
-func (c *Context) Use(h HandleFunc) {
+// Use adds any number of HandleFuncs to the workflow Context.
+func (c *Context) Use(h ...HandleFunc) {
 	// prepend h to c.steps
-	c.steps = append([]HandleFunc{h}, c.steps...)
+	c.steps = append(h, c.steps...)
 }
 
 // Run iteratively runs the HandlerFunc stack until there is no more to do.
