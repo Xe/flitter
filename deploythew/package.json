@@ -1,0 +1,26 @@
+{
+  "name": "deploythew",
+  "version": "0.0.1",
+  "description": "A service that scales containers up and down",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/Xe/flitter"
+  },
+  "author": "Sam Dodrill",
+  "license": "Zlib",
+  "bugs": {
+    "url": "https://github.com/Xe/flitter/issues"
+  },
+  "homepage": "https://github.com/Xe/flitter",
+  "dependencies": {
+    "coffee-script": "^1.8.0",
+    "express": "^4.10.4",
+    "fleetctl": "^1.0.0",
+    "getenv": "^0.4.0",
+    "nodejs-etcd": "^0.1.1"
+  }
+}

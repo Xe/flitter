@@ -25,3 +25,5 @@ _testmain.go
 run/bin/*
 
 .vagrant
+
+deploythew/node_modules
