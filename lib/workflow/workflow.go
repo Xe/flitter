@@ -7,6 +7,7 @@ type Context struct {
 	CleanupTasks []HandleFunc
 	Name         string
 	Arguments    map[string]string
+	Parameters   map[string]interface{}
 
 	steps []HandleFunc
 }
@@ -22,9 +23,10 @@ func NilHandleFunc(c *Context) error {
 // New creates and returns a new workflow Context.
 func New(name string) (c *Context) {
 	c = &Context{
-		Name:      name,
-		steps:     nil,
-		Arguments: make(map[string]string),
+		Name:       name,
+		steps:      nil,
+		Arguments:  make(map[string]string),
+		Parameters: make(map[string]interface{}),
 	}
 
 	return
