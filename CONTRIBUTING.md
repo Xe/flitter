@@ -2,13 +2,7 @@
 
 ## Code Style
 
-Idiomatic Go is a must. If you fail, fail loudly and with details. Avoid
-introducing dependencies where the maintainers do not strictly follow
-[semantic versioning](http://semver.org), and if you must please inform the
-Flitter authors so that a fork can be made.
-
-Do not introduce pull requests for supporting tools such as Goop or Godep, they
-will be denied. `go get`-compatible code is a must.
+Idiomatic Go is a must. If you fail, fail loudly and with details.
 
 ## Documentation
 

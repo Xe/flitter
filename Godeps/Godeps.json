@@ -1,0 +1,77 @@
+{
+	"ImportPath": "github.com/Xe/flitter",
+	"GoVersion": "go1.2.1",
+	"Packages": [
+		"./..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "code.google.com/p/go-uuid/uuid",
+			"Comment": "null-12",
+			"Rev": "7dda39b2e7d5e265014674c5af696ba4186679e9"
+		},
+		{
+			"ImportPath": "code.google.com/p/go.crypto/pbkdf2",
+			"Comment": "null-223",
+			"Rev": "31393df5baea9ed8d6778396e7f3896070ea5c04"
+		},
+		{
+			"ImportPath": "code.google.com/p/go.crypto/ssh",
+			"Comment": "null-223",
+			"Rev": "31393df5baea9ed8d6778396e7f3896070ea5c04"
+		},
+		{
+			"ImportPath": "github.com/Sirupsen/logrus",
+			"Comment": "v0.6.2-10-g51fe59a",
+			"Rev": "51fe59aca108dc5680109e7b2051cbdcfa5a253c"
+		},
+		{
+			"ImportPath": "github.com/Xe/dockerclient",
+			"Rev": "ae29f0bb06d53b1634f2a59b6ca68e97ff611e3b"
+		},
+		{
+			"ImportPath": "github.com/codegangsta/cli",
+			"Comment": "1.2.0-26-gf7ebb76",
+			"Rev": "f7ebb761e83e21225d1d8954fde853bf8edd46c4"
+		},
+		{
+			"ImportPath": "github.com/codegangsta/negroni",
+			"Comment": "v0.1-32-gc64702c",
+			"Rev": "c64702ca03d0f858ab7866638b69e85f0d4c6ee7"
+		},
+		{
+			"ImportPath": "github.com/coreos/go-etcd/etcd",
+			"Comment": "v0.2.0-rc1-127-g6fe04d5",
+			"Rev": "6fe04d580dfb71c9e34cbce2f4df9eefd1e1241e"
+		},
+		{
+			"ImportPath": "github.com/coreos/go-systemd/unit",
+			"Comment": "v2-41-g415a79c",
+			"Rev": "415a79c4bfa377b484b16c632347b3925a0f35ff"
+		},
+		{
+			"ImportPath": "github.com/drone/routes",
+			"Rev": "853bef2b231162bb7b09355720416d3af1510d88"
+		},
+		{
+			"ImportPath": "github.com/flynn/go-shlex",
+			"Rev": "362b626337a53744d1f571d5d70d66294c82d429"
+		},
+		{
+			"ImportPath": "github.com/howeyc/gopass",
+			"Rev": "e8c0d21f59eb7f01086a39e47e05568acc9bb736"
+		},
+		{
+			"ImportPath": "github.com/mgutz/ansi",
+			"Rev": "376eb392d7d7e2ae025da0037c73cf8c20a428d8"
+		},
+		{
+			"ImportPath": "gopkg.in/unrolled/render.v1",
+			"Rev": "bdfac4a8df10cc9dc03ee14ba2f655137fd70378"
+		},
+		{
+			"ImportPath": "gopkg.in/yaml.v1",
+			"Rev": "9f9df34309c04878acc86042b16630b0f696e1de"
+		}
+	]
+}
