@@ -44,7 +44,7 @@ all existing code is kept under the terms of the license it came from. Any new
 projects inside this repository are under the highly permissive Zlib license:
 
 ```
-Copyright (C) 2014 Sam Dodrill <xena@yolo-swag.com> All rights reserved.
+Copyright (C) 2014 Christine Dodrill <xena@yolo-swag.com> All rights reserved.
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
