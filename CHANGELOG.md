@@ -11,3 +11,7 @@ Initial release, very immature.
 
  - fleet support instead of just shooting things to docker on Lagann's host
  - Lagann does not handle deployment anymore
+
+---
+
+Project is largely abandoned.
